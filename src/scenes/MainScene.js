@@ -101,6 +101,12 @@ export class MainScene extends Scene {
         if (this.cursors.down.isDown) {
             this.player.move("down");
         }
+        if (this.cursors.right.isDown) {
+            this.player.move("right");
+        }
+        if (this.cursors.left.isDown) {
+            this.player.move("left");
+        }
 
     }
 }

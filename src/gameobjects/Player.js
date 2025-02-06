@@ -76,6 +76,14 @@ export class Player extends Physics.Arcade.Image {
                 this.y += 5;
                 this.updatePropulsionFire();
             }
+
+            if (direction === "left" && this.x - 10 > 0) {
+                this.x -= 5;
+                this.updatePropulsionFire();
+            } else if (direction === "right" && this.x + 75 < this.scene.scale.width) {
+                this.x += 5;
+                this.updatePropulsionFire();
+            }
         }
     }
 
