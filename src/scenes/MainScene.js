@@ -1,6 +1,7 @@
 import { Scene } from "phaser";
 import { Player } from "../gameobjects/Player";
 import { BlueEnemy } from "../gameobjects/BlueEnemy";
+import { ConveyorBelt } from "../gameobjects/ConveyorBelt";
 
 export class MainScene extends Scene {
     player = null;
@@ -31,6 +32,10 @@ export class MainScene extends Scene {
         // Player
         this.player = new Player({ scene: this });
 
+        // Conveyor Belts
+        // TO DO
+        this.conveyor_belts = [new ConveyorBelt(this)];
+
         // Enemy
         this.enemy_blue = new BlueEnemy(this);
 
@@ -42,6 +47,11 @@ export class MainScene extends Scene {
         this.input.on("pointerdown", (pointer) => {
             this.player.fire(pointer.x, pointer.y);
         });
+
+        // Overlap player with conveyor belts
+        this.physics.add.overlap(this.conveyor_belts, this.player, (player, conveyor_belt) => {
+            this.player.y -= 10
+        })
 
         // Overlap enemy with bullets
         this.physics.add.overlap(this.player.bullets, this.enemy_blue, (enemy, bullet) => {
@@ -68,6 +78,7 @@ export class MainScene extends Scene {
             this.scene.stop("MenuScene");
             this.scene.launch("HudScene", { remaining_time: this.game_over_timeout });
             this.player.start();
+            this.conveyor_belts.forEach((conveyor_belt) => {conveyor_belt.start()})
             this.enemy_blue.start();
 
             // Game Over timeout
@@ -93,6 +104,10 @@ export class MainScene extends Scene {
     update() {
         this.player.update();
         this.enemy_blue.update();
+
+        // Sprite ordering
+        // TEMP?
+        //this.bringToTop(player)
 
         // Player movement entries
         if (this.cursors.up.isDown) {

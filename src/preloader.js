@@ -16,6 +16,9 @@ export class Preloader extends Phaser.Scene {
         this.load.atlas("propulsion-fire", "player/propulsion/propulsion-fire.png", "player/propulsion/propulsion-fire_atlas.json");
         this.load.animation("propulsion-fire-anim", "player/propulsion/propulsion-fire_anim.json");
 
+        // Objects
+        this.load.image("conveyor-belt", "objects/conveyor-belt/conveyor-belt.png")
+
         // Bullets
         this.load.image("bullet", "player/bullet.png");
         this.load.image("flares")
