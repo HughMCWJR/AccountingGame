@@ -1,4 +1,4 @@
-import { Scene } from "phaser";
+import { NONE, Scene } from "phaser";
 import { Player } from "../gameobjects/Player";
 import { BlueEnemy } from "../gameobjects/BlueEnemy";
 import { ConveyorBelt } from "../gameobjects/ConveyorBelt";
@@ -29,15 +29,39 @@ export class MainScene extends Scene {
             .setOrigin(0, 0);
         this.add.image(0, this.scale.height, "floor").setOrigin(0, 1);
 
-        // Player
-        this.player = new Player({ scene: this });
+        // TO DO
+        // Load from player choice
+        let belts_chosen = [1, 2, 3, 4, 5];
 
         // Conveyor Belts
-        // TO DO
-        this.conveyor_belts = [new ConveyorBelt(this)];
+        this.conveyor_belts = [];
+        belts_chosen.forEach((belt_label) => {
+            this.conveyor_belts.push(new ConveyorBelt(this));
+
+            let num_belts = NONE
+            if (belt_label == 1 || belt_label == 2 || belt_label == 3) {
+                num_belts = this.scale.height / this.conveyor_belts[this.conveyor_belts.length - 1].height;
+            } else if (belt_label == 4 || belt_label == 5) {
+                num_belts = this.scale.width / this.conveyor_belts[this.conveyor_belts.length - 1].width;
+            } else {
+                throw new Error("Undefined Conveyor Belt Choice");
+            }
+
+            this.conveyor_belts[this.conveyor_belts.length - 1].set_pos_by_belt_and_num(belt_label, 0);
+
+            let belt_num = 1
+            while (belt_num < num_belts) {
+                this.conveyor_belts.push(new ConveyorBelt(this));
+                this.conveyor_belts[this.conveyor_belts.length - 1].set_pos_by_belt_and_num(belt_label, belt_num);
+                belt_num += 1;
+            }
+        });
 
         // Enemy
         this.enemy_blue = new BlueEnemy(this);
+
+        // Player
+        this.player = new Player({ scene: this });
 
         // Cursor keys 
         this.cursors = this.input.keyboard.createCursorKeys();
@@ -49,8 +73,20 @@ export class MainScene extends Scene {
         });
 
         // Overlap player with conveyor belts
-        this.physics.add.overlap(this.conveyor_belts, this.player, (player, conveyor_belt) => {
-            this.player.y -= 10
+        this.physics.add.overlap(this.conveyor_belts, this.player, (conveyor_belt, player) => {
+            let belt_label = conveyor_belt.belt_label
+
+            if (belt_label == 1 || belt_label == 3) {
+                this.player.y += 2;
+            } else if (belt_label == 2) {
+                this.player.y -= 2;
+            } else if (belt_label == 4) {
+                this.player.x -= 2;
+            } else if (belt_label == 5) {
+                this.player.x += 2;
+            } else {
+                throw new Error("Undefined Conveyor Belt Choice");
+            }
         })
 
         // Overlap enemy with bullets
@@ -77,33 +113,34 @@ export class MainScene extends Scene {
         this.game.events.on("start-game", () => {
             this.scene.stop("MenuScene");
             this.scene.launch("HudScene", { remaining_time: this.game_over_timeout });
-            this.player.start();
-            this.conveyor_belts.forEach((conveyor_belt) => {conveyor_belt.start()})
+            this.conveyor_belts.forEach((conveyor_belt) => {conveyor_belt.start()});
             this.enemy_blue.start();
+            this.player.start();
 
             // Game Over timeout
-            this.time.addEvent({
-                delay: 1000,
-                loop: true,
-                callback: () => {
-                    if (this.game_over_timeout === 0) {
-                        // You need remove the event listener to avoid duplicate events.
-                        this.game.events.removeListener("start-game");
-                        // It is necessary to stop the scenes launched in parallel.
-                        this.scene.stop("HudScene");
-                        this.scene.start("GameOverScene", { points: this.points });
-                    } else {
-                        this.game_over_timeout--;
-                        this.scene.get("HudScene").update_timeout(this.game_over_timeout);
-                    }
-                }
-            });
+            // this.time.addEvent({
+            //     delay: 1000,
+            //     loop: true,
+            //     callback: () => {
+            //         if (this.game_over_timeout === 0) {
+            //             // You need remove the event listener to avoid duplicate events.
+            //             this.game.events.removeListener("start-game");
+            //             // It is necessary to stop the scenes launched in parallel.
+            //             this.scene.stop("HudScene");
+            //             this.scene.start("GameOverScene", { points: this.points });
+            //         } else {
+            //             this.game_over_timeout--;
+            //             this.scene.get("HudScene").update_timeout(this.game_over_timeout);
+            //         }
+            //     }
+            // });
         });
     }
 
     update() {
-        this.player.update();
+        this.conveyor_belts.forEach((conveyor_belt) => {conveyor_belt.update()});
         this.enemy_blue.update();
+        this.player.update();
 
         // Sprite ordering
         // TEMP?
