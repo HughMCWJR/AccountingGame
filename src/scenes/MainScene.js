@@ -3,6 +3,8 @@ import { Player } from "../gameobjects/Player";
 import { BlueEnemy } from "../gameobjects/BlueEnemy";
 import { ConveyorBelt } from "../gameobjects/ConveyorBelt";
 
+const TIME_MOVE_ACROSS_SCREEN = 400;
+
 export class MainScene extends Scene {
     player = null;
     enemy_blue = null;
@@ -72,22 +74,25 @@ export class MainScene extends Scene {
             this.player.fire(pointer.x, pointer.y);
         });
 
-        // Overlap player with conveyor belts
-        this.physics.add.overlap(this.conveyor_belts, this.player, (conveyor_belt, player) => {
+        // Overlap player or ball with conveyor belts
+        function move_along_conveyor_belt(scene, conveyor_belt, player_or_ball) {
             let belt_label = conveyor_belt.belt_label
 
             if (belt_label == 1 || belt_label == 3) {
-                this.player.y += 2;
+                player_or_ball.y += scene.scale.height / TIME_MOVE_ACROSS_SCREEN;
             } else if (belt_label == 2) {
-                this.player.y -= 2;
+                player_or_ball.y -= scene.scale.height / TIME_MOVE_ACROSS_SCREEN;
             } else if (belt_label == 4) {
-                this.player.x -= 2;
+                player_or_ball.x -= scene.scale.width / TIME_MOVE_ACROSS_SCREEN;
             } else if (belt_label == 5) {
-                this.player.x += 2;
+                player_or_ball.x += scene.scale.width / TIME_MOVE_ACROSS_SCREEN;
             } else {
                 throw new Error("Undefined Conveyor Belt Choice");
             }
-        })
+        }
+        this.physics.add.overlap(this.conveyor_belts, this.player, (conveyor_belt, player) => move_along_conveyor_belt(this, conveyor_belt, player))
+
+
 
         // Overlap enemy with bullets
         this.physics.add.overlap(this.player.bullets, this.enemy_blue, (enemy, bullet) => {
