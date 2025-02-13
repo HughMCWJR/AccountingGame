@@ -6,6 +6,9 @@ export class Ball extends GameObjects.Image {
     type;
     player = null;
     state = "idle";
+    // The direction of the belt that the ball moves on...
+    // ...so it doesn't change direction at intersections
+    direction_belt_label = null;
 
     constructor(scene, x, y, name, type) {
         super(scene, x, y, "ball");
@@ -50,6 +53,7 @@ export class Ball extends GameObjects.Image {
         this.state = "picked";
         this.player = player;
         this.player.picked_up_ball = this;
+        this.direction_belt_label = null;
         // this.setActive(true);
         // this.setVisible(true);
     }

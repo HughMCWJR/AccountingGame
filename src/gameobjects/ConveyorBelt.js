@@ -14,13 +14,6 @@ export class ConveyorBelt extends Physics.Arcade.Sprite {
     }
 
     // belt_label: int - 1, 2, 3, 4, or 5
-    // ___1___2___3___
-    // |
-    // 4
-    // |
-    // 5
-    // |
-    // belt_num: int - how many belts along it is (0 is the first one)
     set_pos_and_belt_label(x, y, belt_label) {
         this.x = x;
         this.y = y;

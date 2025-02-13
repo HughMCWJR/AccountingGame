@@ -9,6 +9,8 @@ import { Ball } from "../gameobjects/Ball";
 import { Basket } from "../gameobjects/Basket";
 export class MainScene extends Scene {
     player = null;
+    // Easy fix to make it where we can use same key for picking up and putting down
+    player_dropped_ball_this_frame = false;
     enemy_blue = null;
     cursors = null;
 
@@ -28,8 +30,9 @@ export class MainScene extends Scene {
         this.points = 0;
         this.game_over_timeout = 20;
 
-        this.keyP = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.P);
-        this.keyD = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D);
+        //this.keyP = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.P);
+        //this.keyD = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D);
+        this.keySpace = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
     }
 
     create() {
@@ -59,6 +62,13 @@ export class MainScene extends Scene {
             const BELT_WIDTH = this.conveyor_belts[this.conveyor_belts.length - 1].width;
             const BELT_HEIGHT = this.conveyor_belts[this.conveyor_belts.length - 1].height;
 
+            // ___1___2___3___
+            // |
+            // 4
+            // |
+            // 5
+            // |
+            // belt_num: int - how many belts along it is (0 is the first one)
             function get_pos_from_belt_and_num(scene, belt_label, belt_num) {
                 let x;
                 let y;
@@ -108,19 +118,19 @@ export class MainScene extends Scene {
         this.balls = [new Ball(this, 100, 100, "ball", "red")];
 
         // Enemy
-        this.enemy_blue = new BlueEnemy(this);
+        // this.enemy_blue = new BlueEnemy(this);
 
         // Player
         this.player = new Player({ scene: this });
 
         // Cursor keys 
         this.cursors = this.input.keyboard.createCursorKeys();
-        this.cursors.space.on("down", () => {
-            this.player.fire();
-        });
-        this.input.on("pointerdown", (pointer) => {
-            this.player.fire(pointer.x, pointer.y);
-        });
+        // this.cursors.space.on("down", () => {
+        //     this.player.fire();
+        // });
+        // this.input.on("pointerdown", (pointer) => {
+        //     this.player.fire(pointer.x, pointer.y);
+        // });
 
         // Overlap player or ball with conveyor belts
         function move_along_conveyor_belt(scene, conveyor_belt, player_or_ball) {
@@ -139,43 +149,59 @@ export class MainScene extends Scene {
             }
         }
         this.physics.add.overlap(this.conveyor_belts, this.player, (conveyor_belt, player) => move_along_conveyor_belt(this, conveyor_belt, player))
-        this.physics.add.overlap(this.conveyor_belts, this.balls, (conveyor_belt, ball) => move_along_conveyor_belt(this, conveyor_belt, ball))
+        this.physics.add.overlap(this.conveyor_belts, this.balls, (conveyor_belt, ball) => {
+            if (ball.state !== "picked") {
+                // Check if ball's direction belt label needs to be set
+                if (ball.direction_belt_label == null) {
+                    ball.direction_belt_label = conveyor_belt.belt_label;
+                }
+
+                // Only move balls of this belt
+                if (conveyor_belt.belt_label == ball.direction_belt_label) {
+                    move_along_conveyor_belt(this, conveyor_belt, ball)
+                }
+            }
+        });
 
         // Allow player to pick up balls
         this.physics.add.overlap(this.balls, this.player, (ball, player) => {
-            if (Phaser.Input.Keyboard.JustDown(this.keyP) && Phaser.Math.Distance.Between(player.x, player.y, ball.x, ball.y) < 30) {
+            if (Phaser.Input.Keyboard.JustDown(this.keySpace) && Phaser.Math.Distance.Between(player.x, player.y, ball.x, ball.y) < 30) {
                 if (player.picked_up_ball == null) {
-                    ball.pick(player);
+                    if (!this.player_dropped_ball_this_frame) {
+                        ball.pick(player);
+                        console.log("Picked up");
+                    }
+                    this.player_dropped_ball_this_frame = false;
                 }
             }
         })
 
-        // Overlap enemy with bullets
-        this.physics.add.overlap(this.player.bullets, this.enemy_blue, (enemy, bullet) => {
-            bullet.destroyBullet();
-            this.enemy_blue.damage(this.player.x, this.player.y);
-            this.points += 10;
-            this.scene.get("HudScene")
-                .update_points(this.points);
-        });
+        // // Overlap enemy with bullets
+        // this.physics.add.overlap(this.player.bullets, this.enemy_blue, (enemy, bullet) => {
+        //     bullet.destroyBullet();
+        //     this.enemy_blue.damage(this.player.x, this.player.y);
+        //     this.points += 10;
+        //     this.scene.get("HudScene")
+        //         .update_points(this.points);
+        // });
 
-        // Overlap player with enemy bullets
-        this.physics.add.overlap(this.enemy_blue.bullets, this.player, (player, bullet) => {
-            bullet.destroyBullet();
-            this.cameras.main.shake(100, 0.01);
-            // Flash the color white for 300ms
-            this.cameras.main.flash(300, 255, 10, 10, false,);
-            this.points -= 10;
-            this.scene.get("HudScene")
-                .update_points(this.points);
-        });
+        // // Overlap player with enemy bullets
+        // this.physics.add.overlap(this.enemy_blue.bullets, this.player, (player, bullet) => {
+        //     bullet.destroyBullet();
+        //     this.cameras.main.shake(100, 0.01);
+        //     // Flash the color white for 300ms
+        //     this.cameras.main.flash(300, 255, 10, 10, false,);
+        //     this.points -= 10;
+        //     this.scene.get("HudScene")
+        //         .update_points(this.points);
+        // });
 
         // This event comes from MenuScene
         this.game.events.on("start-game", () => {
             this.scene.stop("MenuScene");
             this.scene.launch("HudScene", { remaining_time: this.game_over_timeout });
             this.conveyor_belts.forEach((conveyor_belt) => { conveyor_belt.start() });
-            this.enemy_blue.start();
+            //this.enemy_blue.start();
             this.player.start();
             this.balls.forEach((ball) => { ball.start() });
             this.baskets.forEach((basket) => { basket.start() });
@@ -202,7 +228,7 @@ export class MainScene extends Scene {
 
     update() {
         this.conveyor_belts.forEach((conveyor_belt) => { conveyor_belt.update() });
-        this.enemy_blue.update();
+        //this.enemy_blue.update();
         this.player.update();
 
         // Sprite ordering
@@ -225,11 +251,15 @@ export class MainScene extends Scene {
         }
 
         // d key to drop the ball
-        if (Phaser.Input.Keyboard.JustDown(this.keyD)) {
-            if (this.player.picked_up_ball != null) {
-                this.player.picked_up_ball.drop();
+        this.cursors.space.on("down", () => {
+            if (!this.player_picked_up_ball_this_frame) {
+                if (this.player.picked_up_ball != null) {
+                    this.player.picked_up_ball.drop();
+                    console.log("Put down");
+                    this.player_dropped_ball_this_frame = true;
+                }
             }
-        }
+        });
 
     }
 }
