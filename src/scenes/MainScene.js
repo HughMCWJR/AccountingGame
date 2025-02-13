@@ -103,6 +103,15 @@ export class MainScene extends Scene {
         this.physics.add.overlap(this.conveyor_belts, this.player, (conveyor_belt, player) => move_along_conveyor_belt(this, conveyor_belt, player))
         this.physics.add.overlap(this.conveyor_belts, this.balls, (conveyor_belt, ball) => move_along_conveyor_belt(this, conveyor_belt, ball))
 
+        // Allow player to pick up balls
+        this.physics.add.overlap(this.balls, this.player, (ball, player) => {
+            if (Phaser.Input.Keyboard.JustDown(this.keyP) && Phaser.Math.Distance.Between(player.x, player.y, ball.x, ball.y) < 30) {
+                if (player.picked_up_ball == null) {
+                    ball.pick(player);
+                }
+            }
+        })
+
         // Overlap enemy with bullets
         this.physics.add.overlap(this.player.bullets, this.enemy_blue, (enemy, bullet) => {
             bullet.destroyBullet();
@@ -176,15 +185,13 @@ export class MainScene extends Scene {
             this.player.move("left");
         }
 
-        if (Phaser.Input.Keyboard.JustDown(this.keyP) && Phaser.Math.Distance.Between(this.player.x, this.player.y, this.ball.x, this.ball.y) < 30) {
-            this.ball.pick(this.player);
-        }
-
         // d key to drop the ball
         if (Phaser.Input.Keyboard.JustDown(this.keyD)) {
-            this.ball.drop();
-            if (Phaser.Math.Distance.Between(this.player.x, this.player.y, this.basket.x, this.basket.y) < 30) {
-                this.basket.checkForBall(this.ball);
+            if (this.player.picked_up_ball != null) {
+                this.player.picked_up_ball.drop();
+                if (Phaser.Math.Distance.Between(this.player.x, this.player.y, this.basket.x, this.basket.y) < 30) {
+                    this.basket.checkForBall(this.ball);
+                }
             }
         }
 

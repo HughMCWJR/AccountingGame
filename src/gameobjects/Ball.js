@@ -38,12 +38,18 @@ export class Ball extends GameObjects.Image {
         this.setVisible(true);
     }
 
+    // Assumes player does not have ball picked up
     pick(player) {
+        if (player.picked_up_ball != null) {
+            throw new Error("Ball tried to be picked up by player who already had ball");
+        }
+
         if (this.state === "picked") {
             return;
         } // Ball already picked
         this.state = "picked";
         this.player = player;
+        this.player.picked_up_ball = this;
         // this.setActive(true);
         // this.setVisible(true);
     }
@@ -52,6 +58,7 @@ export class Ball extends GameObjects.Image {
         if (this.state !== "picked") {
             return;
         } // Ball not picked
+        this.player.picked_up_ball = null;
         this.player = null;
         this.state = "idle";
     }
