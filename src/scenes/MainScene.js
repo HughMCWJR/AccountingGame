@@ -1,7 +1,8 @@
 import { Scene } from "phaser";
 import { Player } from "../gameobjects/Player";
 import { BlueEnemy } from "../gameobjects/BlueEnemy";
-
+import { Ball } from "../gameobjects/Ball";
+import { Basket } from "../gameobjects/Basket";
 export class MainScene extends Scene {
     player = null;
     enemy_blue = null;
@@ -9,6 +10,8 @@ export class MainScene extends Scene {
 
     points = 0;
     game_over_timeout = 20;
+
+
 
     constructor() {
         super("MainScene");
@@ -21,6 +24,9 @@ export class MainScene extends Scene {
         // Reset points
         this.points = 0;
         this.game_over_timeout = 20;
+
+        this.keyP = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.P);
+        this.keyD = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D);
     }
 
     create() {
@@ -30,6 +36,12 @@ export class MainScene extends Scene {
 
         // Player
         this.player = new Player({ scene: this });
+
+
+        this.ball = new Ball(this, 100, 100, "ball", "red");
+
+        this.basket = new Basket(this, 500, 250, "red");
+
 
         // Enemy
         this.enemy_blue = new BlueEnemy(this);
@@ -69,6 +81,7 @@ export class MainScene extends Scene {
             this.scene.launch("HudScene", { remaining_time: this.game_over_timeout });
             this.player.start();
             this.enemy_blue.start();
+            this.ball.start();
 
             // Game Over timeout
             this.time.addEvent({
@@ -93,6 +106,7 @@ export class MainScene extends Scene {
     update() {
         this.player.update();
         this.enemy_blue.update();
+        this.ball.update();
 
         // Player movement entries
         if (this.cursors.up.isDown) {
@@ -106,6 +120,18 @@ export class MainScene extends Scene {
         }
         if (this.cursors.left.isDown) {
             this.player.move("left");
+        }
+
+        if (Phaser.Input.Keyboard.JustDown(this.keyP) && Phaser.Math.Distance.Between(this.player.x, this.player.y, this.ball.x, this.ball.y) < 30) {
+            this.ball.pick(this.player);
+        }
+
+        // d key to drop the ball
+        if (Phaser.Input.Keyboard.JustDown(this.keyD)) {
+            this.ball.drop();
+            if (Phaser.Math.Distance.Between(this.player.x, this.player.y, this.basket.x, this.basket.y) < 30) {
+                this.basket.checkForBall(this.ball);
+            }
         }
 
     }
