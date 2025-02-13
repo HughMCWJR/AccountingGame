@@ -15,7 +15,6 @@ export class MainScene extends Scene {
     game_over_timeout = 20;
 
 
-
     constructor() {
         super("MainScene");
     }
@@ -66,10 +65,9 @@ export class MainScene extends Scene {
         });
 
 
-        this.ball = new Ball(this, 100, 100, "ball", "red");
+        this.balls = [new Ball(this, 100, 100, "ball", "red")];
 
         this.basket = new Basket(this, 500, 250, "red");
-
 
         // Enemy
         this.enemy_blue = new BlueEnemy(this);
@@ -103,8 +101,7 @@ export class MainScene extends Scene {
             }
         }
         this.physics.add.overlap(this.conveyor_belts, this.player, (conveyor_belt, player) => move_along_conveyor_belt(this, conveyor_belt, player))
-
-
+        this.physics.add.overlap(this.conveyor_belts, this.balls, (conveyor_belt, ball) => move_along_conveyor_belt(this, conveyor_belt, ball))
 
         // Overlap enemy with bullets
         this.physics.add.overlap(this.player.bullets, this.enemy_blue, (enemy, bullet) => {
@@ -133,7 +130,7 @@ export class MainScene extends Scene {
             this.conveyor_belts.forEach((conveyor_belt) => { conveyor_belt.start() });
             this.enemy_blue.start();
             this.player.start();
-            this.ball.start();
+            this.balls.forEach((ball) => { ball.start() });
 
             // Game Over timeout
             // this.time.addEvent({
@@ -163,7 +160,7 @@ export class MainScene extends Scene {
         // Sprite ordering
         // TEMP?
         //this.bringToTop(player)
-        this.ball.update();
+        this.balls.forEach((ball) => { ball.update() });
 
         // Player movement entries
         if (this.cursors.up.isDown) {
