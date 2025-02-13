@@ -50,17 +50,18 @@ export class MainScene extends Scene {
         belts_chosen.forEach((belt_label) => {
             this.conveyor_belts.push(new ConveyorBelt(this));
 
+            // Assumes default sprite for ConveyorBelt is up/down
+            const BELT_WIDTH = this.conveyor_belts[this.conveyor_belts.length - 1].width;
+            const BELT_HEIGHT = this.conveyor_belts[this.conveyor_belts.length - 1].height;
+
             let num_belts = NONE
             if (belt_label == 1 || belt_label == 2 || belt_label == 3) {
-                num_belts = this.scale.height / this.conveyor_belts[this.conveyor_belts.length - 1].height;
+                num_belts = this.scale.height / BELT_HEIGHT;
             } else if (belt_label == 4 || belt_label == 5) {
-                num_belts = this.scale.width / this.conveyor_belts[this.conveyor_belts.length - 1].width;
+                num_belts = this.scale.width / BELT_HEIGHT;
             } else {
                 throw new Error("Undefined Conveyor Belt Choice");
             }
-
-            const BELT_WIDTH = this.conveyor_belts[this.conveyor_belts.length - 1].width;
-            const BELT_HEIGHT = this.conveyor_belts[this.conveyor_belts.length - 1].height;
 
             // ___1___2___3___
             // |
@@ -73,12 +74,18 @@ export class MainScene extends Scene {
                 let x;
                 let y;
 
-                if (belt_label == 1 || belt_label == 2 || belt_label == 3) {
+                if (belt_label == 1 || belt_label == 3) {
                     x = ((scene.scale.width / 4) * belt_label)
                     y = belt_num * BELT_HEIGHT + (BELT_HEIGHT / 2)
-                } else if (belt_label == 4 || belt_label == 5) {
+                } else if (belt_label == 2) {
+                    x = ((scene.scale.width / 4) * belt_label)
+                    y = scene.scale.height - (belt_num * BELT_HEIGHT + (BELT_HEIGHT / 2))
+                } else if (belt_label == 5) {
                     y = ((scene.scale.height / 3) * (belt_label - 3))
-                    x = belt_num * BELT_WIDTH + (BELT_WIDTH / 2)
+                    x = belt_num * BELT_HEIGHT + (BELT_HEIGHT / 2)
+                } else if (belt_label == 4) {
+                    y = ((scene.scale.height / 3) * (belt_label - 3))
+                    x = scene.scale.width - (belt_num * BELT_HEIGHT + (BELT_HEIGHT / 2))
                 } else {
                     throw new Error("Undefined Conveyor Belt Choice");
                 }
@@ -102,14 +109,7 @@ export class MainScene extends Scene {
             // Place Basket
             let basket_x;
             let basket_y;
-
-            if (belt_label == 1 || belt_label == 2 || belt_label == 3) {
-                basket_x = ((this.scale.width / 4) * belt_label)
-                basket_y = belt_num * BELT_HEIGHT + (BELT_HEIGHT / 2)
-            } else if (belt_label == 4 || belt_label == 5) {
-                basket_y = ((this.scale.height / 3) * (belt_label - 3))
-                basket_x = belt_num * BELT_WIDTH + (BELT_WIDTH / 2)
-            }
+            [basket_x, basket_y] = get_pos_from_belt_and_num(this, belt_label, belt_num);
 
             this.baskets.push(new Basket(this, basket_x, basket_y, "red"));
         });

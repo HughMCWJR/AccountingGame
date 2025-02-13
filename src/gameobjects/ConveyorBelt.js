@@ -5,6 +5,9 @@ export class ConveyorBelt extends Physics.Arcade.Sprite {
     scene = null;
 
     constructor(scene) {
+        // Default sprite should be up or down sprite
+        // - Further assuming up/down sprites are same shape, and same for left/right
+        // - Further assuming that shape of up/down sprites is transpose of shape for left/right
         super(scene, 0, 0, "conveyor-belt");
         this.scene = scene;
         this.scene.add.existing(this);
