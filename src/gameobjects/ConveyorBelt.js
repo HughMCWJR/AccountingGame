@@ -44,5 +44,6 @@ export class ConveyorBelt extends Physics.Arcade.Sprite {
     }
 
     start() {
+        
     }
 }
