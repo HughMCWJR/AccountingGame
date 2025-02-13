@@ -23,6 +23,12 @@ export class Preloader extends Phaser.Scene {
         this.load.image("bullet", "player/bullet.png");
         this.load.image("flares")
 
+        // Balls
+        this.load.image("ball", "ball.png");
+
+        // basket
+        this.load.image("basket", "basket.png");
+
         // Enemies
         this.load.atlas("enemy-blue", "enemies/enemy-blue/enemy-blue.png", "enemies/enemy-blue/enemy-blue_atlas.json");
         this.load.animation("enemy-blue-anim", "enemies/enemy-blue/enemy-blue_anim.json");
