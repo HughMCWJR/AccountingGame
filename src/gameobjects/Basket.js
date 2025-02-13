@@ -25,4 +25,13 @@ export class Basket extends GameObjects.Image {
         ball.destroyBall(); // destroy the ball
 
     }
+
+    start() {
+        // Change ball change texture
+        // this.setTexture(texture);
+
+
+        this.setActive(true);
+        this.setVisible(true);
+    }
 };

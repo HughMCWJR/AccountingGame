@@ -21,27 +21,29 @@ export class ConveyorBelt extends Physics.Arcade.Sprite {
     // 5
     // |
     // belt_num: int - how many belts along it is (0 is the first one)
-    set_pos_by_belt_and_num(belt_label, belt_num) {
-        this.belt_label = belt_label;
+    set_pos_and_belt_label(x, y, belt_label) {
+        this.x = x;
+        this.y = y;
 
-        if (belt_label == 1 || belt_label == 2 || belt_label == 3) {
-            this.x = ((this.scene.scale.width / 4) * belt_label)
-            this.y = belt_num * this.height + (this.height / 2)
-            if (belt_label == 1 || belt_label == 3) {
-                this.angler = 0;
-            } else {
-                this.angle = 180;
-            }
-        } else if (belt_label == 4 || belt_label == 5) {
-            this.y = ((this.scene.scale.height / 3) * (belt_label - 3))
-            this.x = belt_num * this.width + (this.width / 2)
-            if (belt_label == 4) {
-                this.angle = 90;
-            } else {
-                this.angle = -90;
-            }
+        if (belt_label == 1 || belt_label == 2 || belt_label == 3 || belt_label == 4 || belt_label == 5) {
+            this.belt_label = belt_label;
         } else {
             throw new Error("Undefined Conveyor Belt Choice");
+        }
+
+        // Set Direction
+        if (belt_label == 1 || belt_label == 3) {
+            // Down
+            this.angle = 0;
+        } else if (belt_label == 2) {
+            // Up
+            this.angle = 180;
+        } else if (belt_label == 4) {
+            // Right
+            this.angle = 90;
+        } else if (belt_label == 5) {
+            // Left
+            this.angle = -90;
         }
     }
 
