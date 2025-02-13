@@ -3,7 +3,8 @@ import { Player } from "../gameobjects/Player";
 import { BlueEnemy } from "../gameobjects/BlueEnemy";
 import { ConveyorBelt } from "../gameobjects/ConveyorBelt";
 
-const TIME_MOVE_ACROSS_SCREEN = 400;
+const TIME_MOVE_ACROSS_SCREEN = 600;
+
 import { Ball } from "../gameobjects/Ball";
 import { Basket } from "../gameobjects/Basket";
 export class MainScene extends Scene {
@@ -40,8 +41,9 @@ export class MainScene extends Scene {
         // Load from player choice
         let belts_chosen = [1, 2, 3, 4, 5];
 
-        // Conveyor Belts
+        // Place Conveyor Belts and Vocab Baskets
         this.conveyor_belts = [];
+        this.baskets = [];
         belts_chosen.forEach((belt_label) => {
             this.conveyor_belts.push(new ConveyorBelt(this));
 
@@ -54,20 +56,56 @@ export class MainScene extends Scene {
                 throw new Error("Undefined Conveyor Belt Choice");
             }
 
-            this.conveyor_belts[this.conveyor_belts.length - 1].set_pos_by_belt_and_num(belt_label, 0);
+            const BELT_WIDTH = this.conveyor_belts[this.conveyor_belts.length - 1].width;
+            const BELT_HEIGHT = this.conveyor_belts[this.conveyor_belts.length - 1].height;
+
+            function get_pos_from_belt_and_num(scene, belt_label, belt_num) {
+                let x;
+                let y;
+
+                if (belt_label == 1 || belt_label == 2 || belt_label == 3) {
+                    x = ((scene.scale.width / 4) * belt_label)
+                    y = belt_num * BELT_HEIGHT + (BELT_HEIGHT / 2)
+                } else if (belt_label == 4 || belt_label == 5) {
+                    y = ((scene.scale.height / 3) * (belt_label - 3))
+                    x = belt_num * BELT_WIDTH + (BELT_WIDTH / 2)
+                } else {
+                    throw new Error("Undefined Conveyor Belt Choice");
+                }
+
+                return [x, y];
+            }
+
+            let [x, y] = get_pos_from_belt_and_num(this, belt_label, 0);
+            this.conveyor_belts[this.conveyor_belts.length - 1].set_pos_and_belt_label(x, y, belt_label);
 
             let belt_num = 1
-            while (belt_num < num_belts) {
+            while (belt_num < num_belts - 1) {
                 this.conveyor_belts.push(new ConveyorBelt(this));
-                this.conveyor_belts[this.conveyor_belts.length - 1].set_pos_by_belt_and_num(belt_label, belt_num);
+
+                let [x, y] = get_pos_from_belt_and_num(this, belt_label, belt_num);
+
+                this.conveyor_belts[this.conveyor_belts.length - 1].set_pos_and_belt_label(x, y, belt_label);
                 belt_num += 1;
             }
+            
+            // Place Basket
+            let basket_x;
+            let basket_y;
+
+            if (belt_label == 1 || belt_label == 2 || belt_label == 3) {
+                basket_x = ((this.scale.width / 4) * belt_label)
+                basket_y = belt_num * BELT_HEIGHT + (BELT_HEIGHT / 2)
+            } else if (belt_label == 4 || belt_label == 5) {
+                basket_y = ((this.scale.height / 3) * (belt_label - 3))
+                basket_x = belt_num * BELT_WIDTH + (BELT_WIDTH / 2)
+            }
+
+            this.baskets.push(new Basket(this, basket_x, basket_y, "red"));
         });
 
-
+        // Vocab Balls
         this.balls = [new Ball(this, 100, 100, "ball", "red")];
-
-        this.basket = new Basket(this, 500, 250, "red");
 
         // Enemy
         this.enemy_blue = new BlueEnemy(this);
@@ -140,6 +178,7 @@ export class MainScene extends Scene {
             this.enemy_blue.start();
             this.player.start();
             this.balls.forEach((ball) => { ball.start() });
+            this.baskets.forEach((basket) => { basket.start() });
 
             // Game Over timeout
             // this.time.addEvent({
@@ -189,9 +228,6 @@ export class MainScene extends Scene {
         if (Phaser.Input.Keyboard.JustDown(this.keyD)) {
             if (this.player.picked_up_ball != null) {
                 this.player.picked_up_ball.drop();
-                if (Phaser.Math.Distance.Between(this.player.x, this.player.y, this.basket.x, this.basket.y) < 30) {
-                    this.basket.checkForBall(this.ball);
-                }
             }
         }
 
