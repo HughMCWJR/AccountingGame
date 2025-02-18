@@ -111,6 +111,7 @@ export class Player extends Physics.Arcade.Image {
     }
 
     drop() {
+        this.ball.direction_belt_label = null;
         this.ball.state = null;
         this.ball = null;
     }

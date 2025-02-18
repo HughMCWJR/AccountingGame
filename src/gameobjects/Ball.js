@@ -14,8 +14,6 @@ export class Ball extends GameObjects.Container {
         this.name = name;
         this.type = type;
 
-        console.log(type);
-
         this.scene = scene;
 
         // set the display width and height for the ball
@@ -65,6 +63,12 @@ export class Ball extends GameObjects.Container {
         this.destroy();
         this.state = null;
 
+    }
+
+    // Send to pit for player to retry with ball
+    goToPit() {
+        this.x = this.scene.ball_pit_x;
+        this.y = this.scene.ball_pit_y;
     }
 
 }

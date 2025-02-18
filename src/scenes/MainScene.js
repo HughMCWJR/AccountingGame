@@ -61,8 +61,8 @@ export class MainScene extends Scene {
     enemy_blue = null;
     cursors = null;
 
-    points = 0;
-    game_over_timeout = 20;
+    points;
+    game_over_timeout;
 
     ballCount = 0;
 
@@ -181,15 +181,22 @@ export class MainScene extends Scene {
             this.baskets.push(new Basket(this, basket_x, basket_y, belt_types[belt_label - 1]));
         });
 
+        const BELT_WIDTH = this.conveyor_belts[0].width;
+        const BELT_HEIGHT = this.conveyor_belts[0].height;
+
+        // Create ball return pit
+        this.ball_pit_x = (this.scale.width / 4) * 2.5;
+        this.ball_pit_y = (this.scale.height / 3) * 1.5;
+        this.ball_pit_width = (this.scale.width / 4) - BELT_WIDTH;
+        this.ball_pit_height = (this.scale.height / 3) - BELT_WIDTH;
+
+        // Start ball spawning
         this.balls = this.add.group();
-
-        this.addBall();
-
         this.time.addEvent({
             delay: 2000, // happens every 2 seconds
             callback: this.addBall,
             callbackScope: this,
-            repeat: elements.length - 2 // repeat this event elements.length times
+            repeat: elements.length - 1 // repeat this event elements.length times
         });
 
 
@@ -275,22 +282,22 @@ export class MainScene extends Scene {
             // this.balls.forEach((ball) => { ball.start() });
 
             // Game Over timeout
-            // this.time.addEvent({
-            //     delay: 1000,
-            //     loop: true,
-            //     callback: () => {
-            //         if (this.game_over_timeout === 0) {
-            //             // You need remove the event listener to avoid duplicate events.
-            //             this.game.events.removeListener("start-game");
-            //             // It is necessary to stop the scenes launched in parallel.
-            //             this.scene.stop("HudScene");
-            //             this.scene.start("GameOverScene", { points: this.points });
-            //         } else {
-            //             this.game_over_timeout--;
-            //             this.scene.get("HudScene").update_timeout(this.game_over_timeout);
-            //         }
-            //     }
-            // });
+            this.time.addEvent({
+                delay: 1000,
+                loop: true,
+                callback: () => {
+                    if (this.game_over_timeout === 0) {
+                        // You need remove the event listener to avoid duplicate events.
+                        this.game.events.removeListener("start-game");
+                        // It is necessary to stop the scenes launched in parallel.
+                        this.scene.stop("HudScene");
+                        this.scene.start("GameOverScene", { points: this.points });
+                    } else {
+                        this.game_over_timeout--;
+                        this.scene.get("HudScene").update_timeout(this.game_over_timeout);
+                    }
+                }
+            });
         });
     }
 
