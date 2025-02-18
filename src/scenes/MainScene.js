@@ -12,6 +12,11 @@ export const base_url = import.meta.env.VITE_API_URL;
 
 const DEBIT = "debit";
 const CREDIT = "credit";
+const ASSETS = "assets";
+const LIABITILITIES = "liabilities";
+const STAKEHOLDERS_EQUITY = "stakeholders_equity";
+const EXPENSES = "expenses";
+const REVENUES = "revenues";
 
 const num_ball = 10;
 
@@ -84,6 +89,7 @@ export class MainScene extends Scene {
         // TO DO
         // Load from player choice
         //let belts_chosen = [1, 2, 3, 4, 5];
+        //let belt_types = [ASSETS, LIABITILITIES, STAKEHOLDERS_EQUITY, REVENUES, EXPENSES];
 
         // DEBIT VS CREDIT
         let belts_chosen = [4, 5];
