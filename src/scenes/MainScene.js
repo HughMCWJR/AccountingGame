@@ -20,10 +20,16 @@ const REVENUES = "revenues";
 
 const num_ball = 10;
 
-const fetchData = async (num_ball, retries = 3, delay = 1000) => {
+const fetchData = async (num_ball, game_type, retries = 3, delay = 1000) => {
+    let api_url = null;
+    if (game_type == "debit_credit") {
+        api_url = `${base_url}/get_random_nb_elements`;
+    } else if (game_type == "accounting") {
+        api_url = `${base_url}/get_random_all_elements`;
+    }
     for (let attempt = 1; attempt <= retries; attempt++) {
         try {
-            const response = await axios.post(`${base_url}/get_random_nb_elements`, { num: num_ball }, { withCredentials: true });
+            const response = await axios.post(api_url, { num: num_ball }, { withCredentials: true });
             console.log(response.data);
             return response.data; // success, return early
         } catch (error) {
@@ -53,7 +59,7 @@ else if (game_type == "accounting") {
     config.belt_labels = [1, 2, 3, 4, 5];
 }
 
-const elements = await fetchData(num_ball);
+const elements = await fetchData(num_ball, game_type);
 export class MainScene extends Scene {
     player = null;
     // Easy fix to make it where we can use same key for picking up and putting down
