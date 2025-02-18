@@ -4,6 +4,9 @@ export class Ball extends GameObjects.Container {
     name;
     type;
     state = null;
+    // The direction of the belt that the ball moves on...
+    // ...so it doesn't change direction at intersections
+    direction_belt_label = null;
 
     constructor(scene, x, y, name, type) {
         super(scene, x, y);
