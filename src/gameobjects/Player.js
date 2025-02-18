@@ -2,14 +2,15 @@ import { GameObjects, Physics } from "phaser";
 import { Bullet } from "./Bullet";
 
 export class Player extends Physics.Arcade.Image {
-    
+
     // Player states: waiting, start, can_move
     state = "waiting";
     propulsion_fire = null;
     scene = null;
     bullets = null;
+    ball = null;
 
-    constructor({scene}) {
+    constructor({ scene }) {
         super(scene, -190, 100, "player");
         this.scene = scene;
         this.scene.add.existing(this);
@@ -68,7 +69,7 @@ export class Player extends Physics.Arcade.Image {
     }
 
     move(direction) {
-        if(this.state === "can_move") {
+        if (this.state === "can_move") {
             if (direction === "up" && this.y - 10 > 0) {
                 this.y -= 5;
                 this.updatePropulsionFire();
@@ -101,10 +102,26 @@ export class Player extends Physics.Arcade.Image {
         this.propulsion_fire.setPosition(this.x - 32, this.y);
     }
 
+    pick(ball) {
+        if (this.ball && this.ball.state === "picked") {
+            return;
+        } // Ball already picked
+        this.ball = ball;
+        this.ball.state = "picked";
+    }
+
+    drop() {
+        this.ball.state = null;
+        this.ball = null;
+    }
+
     update() {
         // Sinusoidal movement up and down up and down 2px
         this.y += Math.sin(this.scene.time.now / 200) * 0.10;
         this.propulsion_fire.y = this.y;
+        if (this.ball) {
+            this.ball.setPosition(this.x, this.y - 20);
+        }
     }
 
 }
