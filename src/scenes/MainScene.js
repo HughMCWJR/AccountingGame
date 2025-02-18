@@ -68,15 +68,9 @@ export class MainScene extends Scene {
         let ball = new Ball(this, 100, 100, elements[this.ballCount].name, elements[this.ballCount].type);
         ball.start();
         this.balls.add(ball);
-        this.ballCount++; // 计数加一
+        this.ballCount++;
     }
 
-    addBall() {
-        let ball = new Ball(this, 100, 100, elements[this.ballCount].name, elements[this.ballCount].type);
-        ball.start();
-        this.balls.add(ball);
-        this.ballCount++; // 计数加一
-    }
 
     create() {
         this.add.image(0, 0, "background")
@@ -154,7 +148,7 @@ export class MainScene extends Scene {
             let basket_y;
             [basket_x, basket_y] = get_pos_from_belt_and_num(this, belt_label, belt_num);
 
-            this.baskets.push(new Basket(this, basket_x, basket_y, "red"));
+            this.baskets.push(new Basket(this, basket_x, basket_y, "credit"));
         });
 
 
@@ -167,9 +161,6 @@ export class MainScene extends Scene {
             repeat: elements.length - 1 // repeat this event elements.length times
         });
 
-
-
-        this.basket = new Basket(this, 500, 250, "credit");
 
         // Enemy
         // this.enemy_blue = new BlueEnemy(this);
@@ -220,6 +211,7 @@ export class MainScene extends Scene {
                 }
             }
         });
+        this.physics.add.overlap(this.balls, this.baskets, (ball, basket) => { basket.checkForBall(ball) });
 
         // Overlap enemy with bullets
         this.physics.add.overlap(this.player.bullets, this.enemy_blue, (enemy, bullet) => {
