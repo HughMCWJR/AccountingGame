@@ -38,6 +38,20 @@ const fetchData = async (num_ball, retries = 3, delay = 1000) => {
     }
 };
 
+const game_type = "accounting"; // "debit_credit" or "accounting"
+const config = {
+
+}
+if (game_type == "debit_credit") {
+    config.basket_types = [DEBIT, CREDIT];
+    config.belt_types = [NONE, NONE, NONE, DEBIT, CREDIT];
+    config.belt_labels = [4, 5];
+}
+else if (game_type == "accounting") {
+    config.basket_types = [ASSETS, LIABITILITIES, STAKEHOLDERS_EQUITY, REVENUES, EXPENSES];
+    config.belt_types = [ASSETS, LIABITILITIES, STAKEHOLDERS_EQUITY, REVENUES, EXPENSES];
+    config.belt_labels = [1, 2, 3, 4, 5];
+}
 
 const elements = await fetchData(num_ball);
 export class MainScene extends Scene {
@@ -92,8 +106,8 @@ export class MainScene extends Scene {
         //let belt_types = [ASSETS, LIABITILITIES, STAKEHOLDERS_EQUITY, REVENUES, EXPENSES];
 
         // DEBIT VS CREDIT
-        let belts_chosen = [4, 5];
-        let belt_types = [NONE, NONE, NONE, DEBIT, CREDIT]
+        let belts_chosen = config.belt_labels;
+        let belt_types = config.belt_types;
 
         // Place Conveyor Belts and Vocab Baskets
         this.conveyor_belts = [];
@@ -214,7 +228,7 @@ export class MainScene extends Scene {
                 throw new Error("Undefined Conveyor Belt Choice");
             }
         }
-        
+
         //this.physics.add.overlap(this.conveyor_belts, this.player, (conveyor_belt, player) => move_along_conveyor_belt(this, conveyor_belt, player))
         this.physics.add.overlap(this.conveyor_belts, this.balls, (conveyor_belt, ball) => {
             if (ball.state !== "picked") {
