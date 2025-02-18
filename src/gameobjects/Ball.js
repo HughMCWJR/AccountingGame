@@ -14,10 +14,12 @@ export class Ball extends GameObjects.Container {
         this.name = name;
         this.type = type;
 
+        console.log(type);
+
         this.scene = scene;
 
         // set the display width and height for the ball
-        this.ballImage = new GameObjects.Image(scene, 0, 0, "ball");
+        this.ballImage = new GameObjects.Image(scene, 15, 15, "ball");
         this.ballImage.displayWidth = 30;
         this.ballImage.displayHeight = 30;
 
@@ -35,6 +37,8 @@ export class Ball extends GameObjects.Container {
         // add the ball to the scene
         this.scene.add.existing(this);
         this.scene.physics.add.existing(this);
+
+        this.body.setSize(30,30);
 
         // set the ball properties
         //this.body.setAllowGravity(false);

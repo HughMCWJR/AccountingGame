@@ -10,6 +10,9 @@ import { Basket } from "../gameobjects/Basket";
 import axios from 'axios';
 export const base_url = import.meta.env.VITE_API_URL;
 
+const DEBIT = "debit";
+const CREDIT = "credit";
+
 const num_ball = 10;
 
 const fetchData = async (num_ball, retries = 3, delay = 1000) => {
@@ -65,12 +68,13 @@ export class MainScene extends Scene {
     }
 
     addBall() {
-        let ball = new Ball(this, 100, 100, elements[this.ballCount].name, elements[this.ballCount].type);
+        let starting_conveyor_belt = this.starting_conveyor_belts[Math.floor(Math.random() * this.starting_conveyor_belts.length)];
+
+        let ball = new Ball(this, starting_conveyor_belt.x, starting_conveyor_belt.y, elements[this.ballCount].name, elements[this.ballCount].type);
         ball.start();
         this.balls.add(ball);
         this.ballCount++;
     }
-
 
     create() {
         this.add.image(0, 0, "background")
@@ -79,11 +83,16 @@ export class MainScene extends Scene {
 
         // TO DO
         // Load from player choice
-        let belts_chosen = [1, 2, 3, 4, 5];
+        //let belts_chosen = [1, 2, 3, 4, 5];
+
+        // DEBIT VS CREDIT
+        let belts_chosen = [4, 5];
+        let belt_types = [NONE, NONE, NONE, DEBIT, CREDIT]
 
         // Place Conveyor Belts and Vocab Baskets
         this.conveyor_belts = [];
         this.baskets = [];
+        this.starting_conveyor_belts = [];
         belts_chosen.forEach((belt_label) => {
             this.conveyor_belts.push(new ConveyorBelt(this));
 
@@ -132,6 +141,7 @@ export class MainScene extends Scene {
 
             let [x, y] = get_pos_from_belt_and_num(this, belt_label, 0);
             this.conveyor_belts[this.conveyor_belts.length - 1].set_pos_and_belt_label(x, y, belt_label);
+            this.starting_conveyor_belts.push(this.conveyor_belts[this.conveyor_belts.length - 1]);
 
             let belt_num = 1
             while (belt_num < num_belts - 1) {
@@ -148,14 +158,13 @@ export class MainScene extends Scene {
             let basket_y;
             [basket_x, basket_y] = get_pos_from_belt_and_num(this, belt_label, belt_num);
 
-            this.baskets.push(new Basket(this, basket_x, basket_y, "credit"));
+            this.baskets.push(new Basket(this, basket_x, basket_y, belt_types[belt_label - 1]));
         });
-
 
         this.balls = this.add.group();
 
         this.time.addEvent({
-            delay: 5000, // happens every 10 second
+            delay: 5000, // happens every 5 seconds
             callback: this.addBall,
             callbackScope: this,
             repeat: elements.length - 1 // repeat this event elements.length times
@@ -197,7 +206,8 @@ export class MainScene extends Scene {
                 throw new Error("Undefined Conveyor Belt Choice");
             }
         }
-        // this.physics.add.overlap(this.conveyor_belts, this.player, (conveyor_belt, player) => move_along_conveyor_belt(this, conveyor_belt, player))
+        
+        //this.physics.add.overlap(this.conveyor_belts, this.player, (conveyor_belt, player) => move_along_conveyor_belt(this, conveyor_belt, player))
         this.physics.add.overlap(this.conveyor_belts, this.balls, (conveyor_belt, ball) => {
             if (ball.state !== "picked") {
                 // Check if ball's direction belt label needs to be set
