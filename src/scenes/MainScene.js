@@ -7,6 +7,31 @@ const TIME_MOVE_ACROSS_SCREEN = 600;
 
 import { Ball } from "../gameobjects/Ball";
 import { Basket } from "../gameobjects/Basket";
+import axios from 'axios';
+export const base_url = import.meta.env.VITE_API_URL;
+
+const num_ball = 10;
+
+const fetchData = async (num_ball, retries = 3, delay = 1000) => {
+    for (let attempt = 1; attempt <= retries; attempt++) {
+        try {
+            const response = await axios.post(`${base_url}/get_random_nb_elements`, { num: num_ball }, { withCredentials: true });
+            console.log(response.data);
+            return response.data; // success, return early
+        } catch (error) {
+            console.error(`Attempt ${attempt} failed:`, error.message);
+            if (attempt < retries) {
+                await new Promise((resolve) => setTimeout(resolve, delay)); // wait before retry
+            } else {
+                console.error("All attempts failed.");
+                throw error; // after all attempts have failed, throw the error
+            }
+        }
+    }
+};
+
+
+const elements = await fetchData(num_ball);
 export class MainScene extends Scene {
     player = null;
     // Easy fix to make it where we can use same key for picking up and putting down
@@ -16,6 +41,9 @@ export class MainScene extends Scene {
 
     points = 0;
     game_over_timeout = 20;
+
+    ballCount = 0;
+
 
 
     constructor() {
@@ -32,8 +60,17 @@ export class MainScene extends Scene {
 
         //this.keyP = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.P);
         //this.keyD = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D);
+
         this.keySpace = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
     }
+
+    addBall() {
+        let ball = new Ball(this, 100, 100, elements[this.ballCount].name, elements[this.ballCount].type);
+        ball.start();
+        this.balls.add(ball);
+        this.ballCount++;
+    }
+
 
     create() {
         this.add.image(0, 0, "background")
@@ -105,17 +142,25 @@ export class MainScene extends Scene {
                 this.conveyor_belts[this.conveyor_belts.length - 1].set_pos_and_belt_label(x, y, belt_label);
                 belt_num += 1;
             }
-            
+
             // Place Basket
             let basket_x;
             let basket_y;
             [basket_x, basket_y] = get_pos_from_belt_and_num(this, belt_label, belt_num);
 
-            this.baskets.push(new Basket(this, basket_x, basket_y, "red"));
+            this.baskets.push(new Basket(this, basket_x, basket_y, "credit"));
         });
 
-        // Vocab Balls
-        this.balls = [new Ball(this, 100, 100, "ball", "red")];
+
+        this.balls = this.add.group();
+
+        this.time.addEvent({
+            delay: 5000, // happens every 10 second
+            callback: this.addBall,
+            callbackScope: this,
+            repeat: elements.length - 1 // repeat this event elements.length times
+        });
+
 
         // Enemy
         // this.enemy_blue = new BlueEnemy(this);
@@ -134,7 +179,11 @@ export class MainScene extends Scene {
 
         // Overlap player or ball with conveyor belts
         function move_along_conveyor_belt(scene, conveyor_belt, player_or_ball) {
-            let belt_label = conveyor_belt.belt_label
+            let { belt_label } = conveyor_belt
+
+            if (player_or_ball.state === "picked") {
+                return;
+            } // Ball already picked
 
             if (belt_label == 1 || belt_label == 3) {
                 player_or_ball.y += scene.scale.height / TIME_MOVE_ACROSS_SCREEN;
@@ -148,7 +197,7 @@ export class MainScene extends Scene {
                 throw new Error("Undefined Conveyor Belt Choice");
             }
         }
-        this.physics.add.overlap(this.conveyor_belts, this.player, (conveyor_belt, player) => move_along_conveyor_belt(this, conveyor_belt, player))
+        // this.physics.add.overlap(this.conveyor_belts, this.player, (conveyor_belt, player) => move_along_conveyor_belt(this, conveyor_belt, player))
         this.physics.add.overlap(this.conveyor_belts, this.balls, (conveyor_belt, ball) => {
             if (ball.state !== "picked") {
                 // Check if ball's direction belt label needs to be set
@@ -162,28 +211,16 @@ export class MainScene extends Scene {
                 }
             }
         });
+        this.physics.add.overlap(this.balls, this.baskets, (ball, basket) => { basket.checkForBall(ball) });
 
-        // Allow player to pick up balls
-        this.physics.add.overlap(this.balls, this.player, (ball, player) => {
-            if (Phaser.Input.Keyboard.JustDown(this.keySpace) && Phaser.Math.Distance.Between(player.x, player.y, ball.x, ball.y) < 30) {
-                if (player.picked_up_ball == null) {
-                    if (!this.player_dropped_ball_this_frame) {
-                        ball.pick(player);
-                        console.log("Picked up");
-                    }
-                    this.player_dropped_ball_this_frame = false;
-                }
-            }
-        })
-
-        // // Overlap enemy with bullets
-        // this.physics.add.overlap(this.player.bullets, this.enemy_blue, (enemy, bullet) => {
-        //     bullet.destroyBullet();
-        //     this.enemy_blue.damage(this.player.x, this.player.y);
-        //     this.points += 10;
-        //     this.scene.get("HudScene")
-        //         .update_points(this.points);
-        // });
+        // Overlap enemy with bullets
+        this.physics.add.overlap(this.player.bullets, this.enemy_blue, (enemy, bullet) => {
+            bullet.destroyBullet();
+            this.enemy_blue.damage(this.player.x, this.player.y);
+            this.points += 10;
+            this.scene.get("HudScene")
+                .update_points(this.points);
+        });
 
         // // Overlap player with enemy bullets
         // this.physics.add.overlap(this.enemy_blue.bullets, this.player, (player, bullet) => {
@@ -203,8 +240,7 @@ export class MainScene extends Scene {
             this.conveyor_belts.forEach((conveyor_belt) => { conveyor_belt.start() });
             //this.enemy_blue.start();
             this.player.start();
-            this.balls.forEach((ball) => { ball.start() });
-            this.baskets.forEach((basket) => { basket.start() });
+            // this.balls.forEach((ball) => { ball.start() });
 
             // Game Over timeout
             // this.time.addEvent({
@@ -234,7 +270,9 @@ export class MainScene extends Scene {
         // Sprite ordering
         // TEMP?
         //this.bringToTop(player)
-        this.balls.forEach((ball) => { ball.update() });
+        //this.balls.children.iterate((ball) => {
+        //ball.update(); // Update each ball
+        //})
 
         // Player movement entries
         if (this.cursors.up.isDown) {
@@ -250,16 +288,19 @@ export class MainScene extends Scene {
             this.player.move("left");
         }
 
-        // d key to drop the ball
-        this.cursors.space.on("down", () => {
-            if (!this.player_picked_up_ball_this_frame) {
-                if (this.player.picked_up_ball != null) {
-                    this.player.picked_up_ball.drop();
-                    console.log("Put down");
-                    this.player_dropped_ball_this_frame = true;
-                }
+        if (Phaser.Input.Keyboard.JustDown(this.keySpace)) {
+            if (this.player.ball && this.player.ball.state === "picked") {
+                this.player.drop();
+                return
             }
-        });
+            let ball = this.physics.closest(this.player, this.balls.getChildren());
+            if (Phaser.Math.Distance.Between(this.player.x, this.player.y, ball.x, ball.y) < 30) {
+                this.player.pick(ball);
+            }
+        };
+
+        // d key to drop the ball
+
 
     }
 }

@@ -18,9 +18,12 @@ export class Basket extends GameObjects.Image {
     }
 
     checkForBall(ball) {
+
         if (ball.type === this.type) {
+            this.scene.points += 10;
             this.scene.scene.get("HudScene")
-                .update_points(this.scene.points + 10);
+                .update_points(this.scene.points);
+
         }
         ball.destroyBall(); // destroy the ball
 

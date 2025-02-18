@@ -1,18 +1,15 @@
 import { GameObjects } from "phaser";
 
-export class Ball extends GameObjects.Image {
-    speed;
+export class Ball extends GameObjects.Container {
     name;
     type;
-    player = null;
-    state = "idle";
+    state = null;
     // The direction of the belt that the ball moves on...
     // ...so it doesn't change direction at intersections
     direction_belt_label = null;
 
     constructor(scene, x, y, name, type) {
-        super(scene, x, y, "ball");
-        this.speed = Phaser.Math.GetSpeed(450, 1);
+        super(scene, x, y);
         this.postFX.addBloom(0xffffff, 1, 1, 2, 1.2);
         this.name = name;
         this.type = type;
@@ -20,8 +17,20 @@ export class Ball extends GameObjects.Image {
         this.scene = scene;
 
         // set the display width and height for the ball
-        this.displayWidth = 30;
-        this.displayHeight = 30;
+        this.ballImage = new GameObjects.Image(scene, 0, 0, "ball");
+        this.ballImage.displayWidth = 30;
+        this.ballImage.displayHeight = 30;
+
+        this.textLabel = new GameObjects.Text(scene, 0, -20, name, {
+            fontSize: "14px",
+            fill: "#ffffff",
+            backgroundColor: "rgba(0, 0, 0, 0.5)",
+            padding: { x: 4, y: 2 },
+            align: "center"
+        });
+        this.textLabel.setOrigin(0.5, 1);
+
+        this.add([this.ballImage, this.textLabel]);
 
         // add the ball to the scene
         this.scene.add.existing(this);
@@ -41,46 +50,14 @@ export class Ball extends GameObjects.Image {
         this.setVisible(true);
     }
 
-    // Assumes player does not have ball picked up
-    pick(player) {
-        if (player.picked_up_ball != null) {
-            throw new Error("Ball tried to be picked up by player who already had ball");
-        }
-
-        if (this.state === "picked") {
-            return;
-        } // Ball already picked
-        this.state = "picked";
-        this.player = player;
-        this.player.picked_up_ball = this;
-        this.direction_belt_label = null;
-        // this.setActive(true);
-        // this.setVisible(true);
-    }
-
-    drop() {
-        if (this.state !== "picked") {
-            return;
-        } // Ball not picked
-        this.player.picked_up_ball = null;
-        this.player = null;
-        this.state = "idle";
-    }
 
     destroyBall() {
         // Destroy Ball
         this.setActive(false);
         this.setVisible(false);
         this.destroy();
+        this.state = null;
 
     }
 
-    // Update bullet position and destroy if it goes off screen
-    update(time, delta) {
-        // console.log("update ball");
-        if (this.state === "picked" && this.player) {
-            // Follow the player
-            this.setPosition(this.player.x, this.player.y - 20);
-        }
-    }
 }
