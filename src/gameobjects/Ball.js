@@ -10,7 +10,7 @@ export class Ball extends GameObjects.Container {
 
     constructor(scene, x, y, name, type) {
         super(scene, x, y);
-        this.postFX.addBloom(0xffffff, 1, 1, 2, 1.2);
+        //this.postFX.addBloom(0xffffff, 1, 1, 2, 1.2);
         this.name = name;
         this.type = type;
 
@@ -19,7 +19,7 @@ export class Ball extends GameObjects.Container {
         this.scene = scene;
 
         // set the display width and height for the ball
-        this.ballImage = new GameObjects.Image(scene, 15, 15, "ball");
+        this.ballImage = new GameObjects.Image(scene, 0, 0, "ball");
         this.ballImage.displayWidth = 30;
         this.ballImage.displayHeight = 30;
 
@@ -38,7 +38,10 @@ export class Ball extends GameObjects.Container {
         this.scene.add.existing(this);
         this.scene.physics.add.existing(this);
 
-        this.body.setSize(30,30);
+        // fix physics body
+        this.body.setSize(30, 30);
+        this.body.offset.x = -15;
+        this.body.offset.y = -15;
 
         // set the ball properties
         //this.body.setAllowGravity(false);

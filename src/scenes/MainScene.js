@@ -163,11 +163,13 @@ export class MainScene extends Scene {
 
         this.balls = this.add.group();
 
+        this.addBall();
+
         this.time.addEvent({
-            delay: 5000, // happens every 5 seconds
+            delay: 2000, // happens every 2 seconds
             callback: this.addBall,
             callbackScope: this,
-            repeat: elements.length - 1 // repeat this event elements.length times
+            repeat: elements.length - 2 // repeat this event elements.length times
         });
 
 
