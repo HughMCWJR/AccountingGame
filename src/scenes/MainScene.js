@@ -62,6 +62,7 @@ else if (game_type == "accounting") {
 const NUM_BALLS = Math.ceil((config.time_limit * 1000) / config.time_between_ball_spawns);
 
 const elements = await fetchData(NUM_BALLS, game_type);
+
 export class MainScene extends Scene {
     player = null;
     // Easy fix to make it where we can use same key for picking up and putting down
@@ -80,16 +81,33 @@ export class MainScene extends Scene {
         super("MainScene");
     }
 
-    init() {
+    init(data) {
         this.cameras.main.fadeIn(1000, 0, 0, 0);
-        this.scene.launch("MenuScene");
+        const game_type = data.type || "accounting"; // "debit_credit" or "accounting"
+        this.config = {
+
+        }
+        if (game_type == "debit_credit") {
+            this.config.basket_types = [DEBIT, CREDIT];
+            this.config.belt_types = [NONE, NONE, NONE, DEBIT, CREDIT];
+            this.config.belt_labels = [4, 5];
+        }
+        else if (game_type == "accounting") {
+            this.config.basket_types = [ASSETS, LIABITILITIES, STAKEHOLDERS_EQUITY, REVENUES, EXPENSES];
+            this.config.belt_types = [ASSETS, LIABITILITIES, STAKEHOLDERS_EQUITY, REVENUES, EXPENSES];
+            this.config.belt_labels = [1, 2, 3, 4, 5];
+        }
 
         // Reset points
         this.points = 0;
         this.game_over_timeout = config.time_limit;
 
-        //this.keyP = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.P);
-        //this.keyD = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D);
+        fetchData(num_ball, game_type).then((data) => {
+            this.elements = data;
+            this.scene.launch("MenuScene");
+        }).catch((error) => {
+            console.error("Failed to fetch data:", error);
+        });
 
         this.keySpace = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
     }
@@ -120,8 +138,8 @@ export class MainScene extends Scene {
         //let belt_types = [ASSETS, LIABITILITIES, STAKEHOLDERS_EQUITY, REVENUES, EXPENSES];
 
         // DEBIT VS CREDIT
-        let belts_chosen = config.belt_labels;
-        let belt_types = config.belt_types;
+        let belts_chosen = this.config.belt_labels;
+        let belt_types = this.config.belt_types;
 
         // Place Conveyor Belts and Vocab Baskets
         this.conveyor_belts = [];
@@ -289,6 +307,13 @@ export class MainScene extends Scene {
         // This event comes from MenuScene
         this.game.events.on("start-game", () => {
             this.scene.stop("MenuScene");
+            this.time.addEvent({
+                delay: 2000, // happens every 2 seconds
+                callback: this.addBall,
+                callbackScope: this,
+                repeat: this.elements.length - 2 // repeat this event elements.length times
+            });
+
             this.scene.launch("HudScene", { remaining_time: this.game_over_timeout });
             this.conveyor_belts.forEach((conveyor_belt) => { conveyor_belt.start() });
             //this.enemy_blue.start();
