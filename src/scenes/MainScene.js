@@ -3,8 +3,6 @@ import { Player } from "../gameobjects/Player";
 import { BlueEnemy } from "../gameobjects/BlueEnemy";
 import { ConveyorBelt } from "../gameobjects/ConveyorBelt";
 
-const TIME_MOVE_ACROSS_SCREEN = 600;
-
 import { Ball } from "../gameobjects/Ball";
 import { Basket } from "../gameobjects/Basket";
 import axios from 'axios';
@@ -17,8 +15,6 @@ const LIABITILITIES = "liabilities";
 const STAKEHOLDERS_EQUITY = "stakeholders_equity";
 const EXPENSES = "expenses";
 const REVENUES = "revenues";
-
-const num_ball = 10;
 
 const fetchData = async (num_ball, game_type, retries = 3, delay = 1000) => {
     let api_url = null;
@@ -44,6 +40,28 @@ const fetchData = async (num_ball, game_type, retries = 3, delay = 1000) => {
     }
 };
 
+const game_type = "accounting"; // "debit_credit" or "accounting"
+const config = {
+    num_balls_at_time: 4,
+    time_limit: 20,
+    time_move_across_screen: 600,
+    time_between_ball_spawns: 1000
+}
+if (game_type == "debit_credit") {
+    config.basket_types = [DEBIT, CREDIT];
+    config.belt_types = [NONE, NONE, NONE, DEBIT, CREDIT];
+    config.belt_labels = [4, 5];
+}
+else if (game_type == "accounting") {
+    config.basket_types = [ASSETS, LIABITILITIES, STAKEHOLDERS_EQUITY, REVENUES, EXPENSES];
+    config.belt_types = [ASSETS, LIABITILITIES, STAKEHOLDERS_EQUITY, REVENUES, EXPENSES];
+    config.belt_labels = [1, 2, 3, 4, 5];
+}
+
+// The multiply by 100 is to fix units
+const NUM_BALLS = Math.ceil((config.time_limit * 1000) / config.time_between_ball_spawns);
+
+const elements = await fetchData(NUM_BALLS, game_type);
 
 export class MainScene extends Scene {
     player = null;
@@ -52,8 +70,8 @@ export class MainScene extends Scene {
     enemy_blue = null;
     cursors = null;
 
-    points = 0;
-    game_over_timeout = 20;
+    points;
+    game_over_timeout;
 
     ballCount = 0;
 
@@ -82,7 +100,7 @@ export class MainScene extends Scene {
 
         // Reset points
         this.points = 0;
-        this.game_over_timeout = 20;
+        this.game_over_timeout = config.time_limit;
 
         fetchData(num_ball, game_type).then((data) => {
             this.elements = data;
@@ -95,12 +113,18 @@ export class MainScene extends Scene {
     }
 
     addBall() {
-        let starting_conveyor_belt = this.starting_conveyor_belts[Math.floor(Math.random() * this.starting_conveyor_belts.length)];
+        if (this.ballCount < elements.length) {
+            if (this.balls.getLength() < config.num_balls_at_time) {
+                let starting_conveyor_belt = this.starting_conveyor_belts[Math.floor(Math.random() * this.starting_conveyor_belts.length)];
 
-        let ball = new Ball(this, starting_conveyor_belt.x, starting_conveyor_belt.y, this.elements[this.ballCount].name, this.elements[this.ballCount].type);
-        ball.start();
-        this.balls.add(ball);
-        this.ballCount++;
+                let ball = new Ball(this, starting_conveyor_belt.x, starting_conveyor_belt.y, elements[this.ballCount].name, elements[this.ballCount].type);
+                ball.start();
+                this.balls.add(ball);
+                this.ballCount++;
+            }
+        } else {
+            throw new Error("Ran out of balls");
+        }
     }
 
     create() {
@@ -189,9 +213,23 @@ export class MainScene extends Scene {
             this.baskets.push(new Basket(this, basket_x, basket_y, belt_types[belt_label - 1]));
         });
 
+        const BELT_WIDTH = this.conveyor_belts[0].width;
+        const BELT_HEIGHT = this.conveyor_belts[0].height;
+
+        // Create ball return pit
+        this.ball_pit_x = (this.scale.width / 4) * 2.5;
+        this.ball_pit_y = (this.scale.height / 3) * 1.5;
+        this.ball_pit_width = (this.scale.width / 4) - BELT_WIDTH;
+        this.ball_pit_height = (this.scale.height / 3) - BELT_WIDTH;
+
+        // Start ball spawning
         this.balls = this.add.group();
-
-
+        this.time.addEvent({
+            delay: config.time_between_ball_spawns, // happens every 2 seconds
+            callback: this.addBall,
+            callbackScope: this,
+            loop: true
+        });
 
 
         // Enemy
@@ -218,13 +256,13 @@ export class MainScene extends Scene {
             } // Ball already picked
 
             if (belt_label == 1 || belt_label == 3) {
-                player_or_ball.y += scene.scale.height / TIME_MOVE_ACROSS_SCREEN;
+                player_or_ball.y += scene.scale.height / config.time_move_across_screen;
             } else if (belt_label == 2) {
-                player_or_ball.y -= scene.scale.height / TIME_MOVE_ACROSS_SCREEN;
+                player_or_ball.y -= scene.scale.height / config.time_move_across_screen;
             } else if (belt_label == 4) {
-                player_or_ball.x -= scene.scale.width / TIME_MOVE_ACROSS_SCREEN;
+                player_or_ball.x -= scene.scale.width / config.time_move_across_screen;
             } else if (belt_label == 5) {
-                player_or_ball.x += scene.scale.width / TIME_MOVE_ACROSS_SCREEN;
+                player_or_ball.x += scene.scale.width / config.time_move_across_screen;
             } else {
                 throw new Error("Undefined Conveyor Belt Choice");
             }
@@ -283,29 +321,29 @@ export class MainScene extends Scene {
             // this.balls.forEach((ball) => { ball.start() });
 
             // Game Over timeout
-            // this.time.addEvent({
-            //     delay: 1000,
-            //     loop: true,
-            //     callback: () => {
-            //         if (this.game_over_timeout === 0) {
-            //             // You need remove the event listener to avoid duplicate events.
-            //             this.game.events.removeListener("start-game");
-            //             // It is necessary to stop the scenes launched in parallel.
-            //             this.scene.stop("HudScene");
-            //             this.scene.start("GameOverScene", { points: this.points });
-            //         } else {
-            //             this.game_over_timeout--;
-            //             this.scene.get("HudScene").update_timeout(this.game_over_timeout);
-            //         }
-            //     }
-            // });
+            this.time.addEvent({
+                delay: 1000,
+                loop: true,
+                callback: () => {
+                    if (this.game_over_timeout === 0) {
+                        // You need remove the event listener to avoid duplicate events.
+                        this.game.events.removeListener("start-game");
+                        // It is necessary to stop the scenes launched in parallel.
+                        this.scene.stop("HudScene");
+                        this.scene.start("GameOverScene", { points: this.points });
+                    } else {
+                        this.game_over_timeout--;
+                        this.scene.get("HudScene").update_timeout(this.game_over_timeout);
+                    }
+                }
+            });
         });
     }
 
-    update() {
-        this.conveyor_belts.forEach((conveyor_belt) => { conveyor_belt.update() });
+    update(time, delta) {
+        this.conveyor_belts.forEach((conveyor_belt) => { conveyor_belt.update(time, delta) });
         //this.enemy_blue.update();
-        this.player.update();
+        this.player.update(time, delta);
 
         // Sprite ordering
         // TEMP?

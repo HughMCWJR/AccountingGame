@@ -64,7 +64,7 @@ export class GameOverScene extends Scene {
 
         // Click to restart
         this.time.addEvent({
-            delay: 1000,
+            delay: 100,
             callback: () => {
                 this.input.on("pointerdown", () => {
                     this.scene.start("MainScene");

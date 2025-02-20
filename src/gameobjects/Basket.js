@@ -36,9 +36,10 @@ export class Basket extends GameObjects.Container {
             this.scene.points += 10;
             this.scene.scene.get("HudScene")
                 .update_points(this.scene.points);
-
+            ball.destroyBall(); // destroy the ball
+        } else {
+            ball.goToPit();
         }
-        ball.destroyBall(); // destroy the ball
 
     }
 
