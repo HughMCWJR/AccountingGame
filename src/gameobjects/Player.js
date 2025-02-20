@@ -73,7 +73,7 @@ export class Player extends Physics.Arcade.Image {
             if (direction === "up" && this.y - 10 > 0) {
                 this.y -= 5;
                 this.updatePropulsionFire();
-            } else if (direction === "down" && this.y + 75 < this.scene.scale.height) {
+            } else if (direction === "down" && this.y + 10 < this.scene.scale.height) {
                 this.y += 5;
                 this.updatePropulsionFire();
             }
@@ -81,7 +81,7 @@ export class Player extends Physics.Arcade.Image {
             if (direction === "left" && this.x - 10 > 0) {
                 this.x -= 5;
                 this.updatePropulsionFire();
-            } else if (direction === "right" && this.x + 75 < this.scene.scale.width) {
+            } else if (direction === "right" && this.x + 10 < this.scene.scale.width) {
                 this.x += 5;
                 this.updatePropulsionFire();
             }

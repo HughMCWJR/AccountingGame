@@ -3,8 +3,6 @@ import { Player } from "../gameobjects/Player";
 import { BlueEnemy } from "../gameobjects/BlueEnemy";
 import { ConveyorBelt } from "../gameobjects/ConveyorBelt";
 
-const TIME_MOVE_ACROSS_SCREEN = 600;
-
 import { Ball } from "../gameobjects/Ball";
 import { Basket } from "../gameobjects/Basket";
 import axios from 'axios';
@@ -17,8 +15,6 @@ const LIABITILITIES = "liabilities";
 const STAKEHOLDERS_EQUITY = "stakeholders_equity";
 const EXPENSES = "expenses";
 const REVENUES = "revenues";
-
-const num_ball = 10;
 
 const fetchData = async (num_ball, game_type, retries = 3, delay = 1000) => {
     let api_url = null;
@@ -46,7 +42,10 @@ const fetchData = async (num_ball, game_type, retries = 3, delay = 1000) => {
 
 const game_type = "accounting"; // "debit_credit" or "accounting"
 const config = {
-
+    num_balls_at_time: 4,
+    time_limit: 20,
+    time_move_across_screen: 600,
+    time_between_ball_spawns: 1000
 }
 if (game_type == "debit_credit") {
     config.basket_types = [DEBIT, CREDIT];
@@ -59,7 +58,10 @@ else if (game_type == "accounting") {
     config.belt_labels = [1, 2, 3, 4, 5];
 }
 
-const elements = await fetchData(num_ball, game_type);
+// The multiply by 100 is to fix units
+const NUM_BALLS = Math.ceil((config.time_limit * 1000) / config.time_between_ball_spawns);
+
+const elements = await fetchData(NUM_BALLS, game_type);
 export class MainScene extends Scene {
     player = null;
     // Easy fix to make it where we can use same key for picking up and putting down
@@ -84,7 +86,7 @@ export class MainScene extends Scene {
 
         // Reset points
         this.points = 0;
-        this.game_over_timeout = 20;
+        this.game_over_timeout = config.time_limit;
 
         //this.keyP = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.P);
         //this.keyD = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D);
@@ -93,12 +95,18 @@ export class MainScene extends Scene {
     }
 
     addBall() {
-        let starting_conveyor_belt = this.starting_conveyor_belts[Math.floor(Math.random() * this.starting_conveyor_belts.length)];
+        if (this.ballCount < elements.length) {
+            if (this.balls.getLength() < config.num_balls_at_time) {
+                let starting_conveyor_belt = this.starting_conveyor_belts[Math.floor(Math.random() * this.starting_conveyor_belts.length)];
 
-        let ball = new Ball(this, starting_conveyor_belt.x, starting_conveyor_belt.y, elements[this.ballCount].name, elements[this.ballCount].type);
-        ball.start();
-        this.balls.add(ball);
-        this.ballCount++;
+                let ball = new Ball(this, starting_conveyor_belt.x, starting_conveyor_belt.y, elements[this.ballCount].name, elements[this.ballCount].type);
+                ball.start();
+                this.balls.add(ball);
+                this.ballCount++;
+            }
+        } else {
+            throw new Error("Ran out of balls");
+        }
     }
 
     create() {
@@ -199,10 +207,10 @@ export class MainScene extends Scene {
         // Start ball spawning
         this.balls = this.add.group();
         this.time.addEvent({
-            delay: 2000, // happens every 2 seconds
+            delay: config.time_between_ball_spawns, // happens every 2 seconds
             callback: this.addBall,
             callbackScope: this,
-            repeat: elements.length - 1 // repeat this event elements.length times
+            loop: true
         });
 
 
@@ -230,13 +238,13 @@ export class MainScene extends Scene {
             } // Ball already picked
 
             if (belt_label == 1 || belt_label == 3) {
-                player_or_ball.y += scene.scale.height / TIME_MOVE_ACROSS_SCREEN;
+                player_or_ball.y += scene.scale.height / config.time_move_across_screen;
             } else if (belt_label == 2) {
-                player_or_ball.y -= scene.scale.height / TIME_MOVE_ACROSS_SCREEN;
+                player_or_ball.y -= scene.scale.height / config.time_move_across_screen;
             } else if (belt_label == 4) {
-                player_or_ball.x -= scene.scale.width / TIME_MOVE_ACROSS_SCREEN;
+                player_or_ball.x -= scene.scale.width / config.time_move_across_screen;
             } else if (belt_label == 5) {
-                player_or_ball.x += scene.scale.width / TIME_MOVE_ACROSS_SCREEN;
+                player_or_ball.x += scene.scale.width / config.time_move_across_screen;
             } else {
                 throw new Error("Undefined Conveyor Belt Choice");
             }
@@ -307,10 +315,10 @@ export class MainScene extends Scene {
         });
     }
 
-    update() {
-        this.conveyor_belts.forEach((conveyor_belt) => { conveyor_belt.update() });
+    update(time, delta) {
+        this.conveyor_belts.forEach((conveyor_belt) => { conveyor_belt.update(time, delta) });
         //this.enemy_blue.update();
-        this.player.update();
+        this.player.update(time, delta);
 
         // Sprite ordering
         // TEMP?

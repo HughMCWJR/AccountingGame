@@ -21,7 +21,7 @@ export class Ball extends GameObjects.Container {
         this.ballImage.displayWidth = 30;
         this.ballImage.displayHeight = 30;
 
-        this.textLabel = new GameObjects.Text(scene, 0, -20, name, {
+        this.textLabel = new GameObjects.Text(scene, 0, -20, name + " - " + type, {
             fontSize: "14px",
             fill: "#ffffff",
             backgroundColor: "rgba(0, 0, 0, 0.5)",
