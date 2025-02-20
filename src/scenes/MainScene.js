@@ -45,7 +45,7 @@ const config = {
     // The following two are in secs
     time_limit: 20000,
     time_between_ball_spawns: 1000,
-    // This is in 
+    // This is in frames
     time_move_across_screen: 600
 }
 
