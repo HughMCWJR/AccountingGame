@@ -43,9 +43,9 @@ const fetchData = async (num_ball, game_type, retries = 3, delay = 1000) => {
 const game_type = "accounting"; // "debit_credit" or "accounting"
 const config = {
     num_balls_at_time: 4,
-    time_limit: 20,
-    time_move_across_screen: 600,
-    time_between_ball_spawns: 1000
+    time_limit: 20000,
+    time_between_ball_spawns: 1000,
+    time_move_across_screen: 600
 }
 if (game_type == "debit_credit") {
     config.basket_types = [DEBIT, CREDIT];
@@ -58,8 +58,7 @@ else if (game_type == "accounting") {
     config.belt_labels = [1, 2, 3, 4, 5];
 }
 
-// The multiply by 100 is to fix units
-const NUM_BALLS = Math.ceil((config.time_limit * 1000) / config.time_between_ball_spawns);
+const NUM_BALLS = Math.ceil(config.time_limit / config.time_between_ball_spawns);
 
 const elements = await fetchData(NUM_BALLS, game_type);
 
@@ -100,7 +99,7 @@ export class MainScene extends Scene {
 
         // Reset points
         this.points = 0;
-        this.game_over_timeout = config.time_limit;
+        this.game_over_timeout = config.time_limit / 1000;
 
         fetchData(num_ball, game_type).then((data) => {
             this.elements = data;
