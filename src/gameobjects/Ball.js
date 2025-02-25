@@ -21,12 +21,16 @@ export class Ball extends GameObjects.Container {
         // set the display width and height for the ball
         this.ballImage = new GameObjects.Image(scene, 0, 0, "ball");
 
+        this.ballImage.setTintFill(0xffffff);
+
         const textContent = this.formatTextToSquare(this.name + " - " + type);
 
         this.textLabel = new GameObjects.Text(scene, 0, 0, textContent, {
             fontSize: "14px",
             //fill: "#ffffff",
             fill: "#000000",
+            stroke: "#000000",
+            strokeThickness: 1,
             // backgroundColor: "rgba(0, 0, 0, 0.5)",
             padding: { x: 4, y: 2 },
             align: "center",
