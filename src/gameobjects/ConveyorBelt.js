@@ -8,12 +8,12 @@ export class ConveyorBelt extends Physics.Arcade.Sprite {
         // Default sprite should be up or down sprite
         // - Further assuming up/down sprites are same shape, and same for left/right
         // - Further assuming that shape of up/down sprites is transpose of shape for left/right
-        super(scene, 0, 0, "conveyor-belt");
+        super(scene, 0, 0, "belt");
         this.scene = scene;
         this.scene.add.existing(this);
         this.scene.physics.add.existing(this);
         this.setScale(1);
-        this.body.setSize(32, 32);
+        this.body.setSize(48, 43);
     }
 
     // belt_label: int - 1, 2, 3, 4, or 5
@@ -31,15 +31,21 @@ export class ConveyorBelt extends Physics.Arcade.Sprite {
         if (belt_label == 1 || belt_label == 3) {
             // Down
             this.angle = 0;
+            this.play("down");
         } else if (belt_label == 2) {
             // Up
             this.angle = 180;
+            this.play("up");
         } else if (belt_label == 4) {
             // Right
+            this.body.setSize(43, 48);
             this.angle = 90;
+            this.play("right");
         } else if (belt_label == 5) {
             // Left
+            this.setSize(43, 48);
             this.angle = -90;
+            this.play("left");
         }
     }
 

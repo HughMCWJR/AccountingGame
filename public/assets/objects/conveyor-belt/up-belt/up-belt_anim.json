@@ -1,0 +1,32 @@
+{
+    "anims": [
+        {
+            "key": "up",
+            "type": "frames",
+            "repeat": -1,
+            "frameRate": 10,
+            "frames": [
+                {
+                    "key": "up-belt",
+                    "frame": "up-belt_0"
+                },
+                {
+                    "key": "up-belt",
+                    "frame": "up-belt_1"
+                },
+                {
+                    "key": "up-belt",
+                    "frame": "up-belt_2"
+                },
+                {
+                    "key": "up-belt",
+                    "frame": "up-belt_3"
+                },
+                {
+                    "key": "up-belt",
+                    "frame": "up-belt_4"
+                }
+            ]
+        }
+    ]
+}

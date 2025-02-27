@@ -1,0 +1,32 @@
+{
+    "anims": [
+        {
+            "key": "down",
+            "type": "frames",
+            "repeat": -1,
+            "frameRate": 10,
+            "frames": [
+                {
+                    "key": "down-belt",
+                    "frame": "down-belt_0"
+                },
+                {
+                    "key": "down-belt",
+                    "frame": "down-belt_1"
+                },
+                {
+                    "key": "down-belt",
+                    "frame": "down-belt_2"
+                },
+                {
+                    "key": "down-belt",
+                    "frame": "down-belt_3"
+                },
+                {
+                    "key": "down-belt",
+                    "frame": "down-belt_4"
+                }
+            ]
+        }
+    ]
+}

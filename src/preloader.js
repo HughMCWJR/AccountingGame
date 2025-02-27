@@ -12,12 +12,20 @@ export class Preloader extends Phaser.Scene {
         this.load.image("floor");
         this.load.image("background", "background.png");
 
-        this.load.image("player", "player/player.png");
+        this.load.image("player", "player/aubie.png");
         this.load.atlas("propulsion-fire", "player/propulsion/propulsion-fire.png", "player/propulsion/propulsion-fire_atlas.json");
         this.load.animation("propulsion-fire-anim", "player/propulsion/propulsion-fire_anim.json");
 
-        // Objects
-        this.load.image("conveyor-belt", "objects/conveyor-belt/conveyor-belt.png")
+        // Conveyor Belts
+	    this.load.image("belt", "objects/conveyor-belt/Conveyor_Belt_Base.png")
+        this.load.atlas("up-belt", "objects/conveyor-belt/up-belt/up-belt.png", "objects/conveyor-belt/up-belt/up-belt_atlas.json");
+        this.load.animation("up-belt-anim", "objects/conveyor-belt/up-belt/up-belt_anim.json");
+        this.load.atlas("down-belt", "objects/conveyor-belt/down-belt/down-belt.png", "objects/conveyor-belt/down-belt/down-belt_atlas.json");
+        this.load.animation("down-belt-anim", "objects/conveyor-belt/down-belt/down-belt_anim.json");
+        this.load.atlas("right-belt", "objects/conveyor-belt/right-belt/right-belt.png", "objects/conveyor-belt/right-belt/right-belt_atlas.json");
+        this.load.animation("right-belt-anim", "objects/conveyor-belt/right-belt/right-belt_anim.json");
+        this.load.atlas("left-belt", "objects/conveyor-belt/left-belt/left-belt.png", "objects/conveyor-belt/left-belt/left-belt_atlas.json");
+        this.load.animation("left-belt-anim", "objects/conveyor-belt/left-belt/left-belt_anim.json");
 
         // Bullets
         this.load.image("bullet", "player/bullet.png");
@@ -27,7 +35,7 @@ export class Preloader extends Phaser.Scene {
         this.load.image("ball", "ball.png");
 
         // basket
-        this.load.image("basket", "basket.png");
+        this.load.image("basket", "box.png");
 
         // Enemies
         this.load.atlas("enemy-blue", "enemies/enemy-blue/enemy-blue.png", "enemies/enemy-blue/enemy-blue_atlas.json");

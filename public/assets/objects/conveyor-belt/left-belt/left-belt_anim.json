@@ -1,0 +1,32 @@
+{
+    "anims": [
+        {
+            "key": "left",
+            "type": "frames",
+            "repeat": -1,
+            "frameRate": 10,
+            "frames": [
+                {
+                    "key": "left-belt",
+                    "frame": "left-belt_0"
+                },
+                {
+                    "key": "left-belt",
+                    "frame": "left-belt_1"
+                },
+                {
+                    "key": "left-belt",
+                    "frame": "left-belt_2"
+                },
+                {
+                    "key": "left-belt",
+                    "frame": "left-belt_3"
+                },
+                {
+                    "key": "left-belt",
+                    "frame": "left-belt_4"
+                }
+            ]
+        }
+    ]
+}
