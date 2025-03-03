@@ -114,7 +114,6 @@ export class MainScene extends Scene {
     create() {
         this.add.image(0, 0, "background")
             .setOrigin(0, 0);
-        this.add.image(0, this.scale.height, "floor").setOrigin(0, 1);
 
         // TO DO
         // Load from player choice
@@ -216,7 +215,7 @@ export class MainScene extends Scene {
         // Player
         this.player = new Player({ scene: this });
 
-        // Cursor keys 
+        // Cursor keys
         this.cursors = this.input.keyboard.createCursorKeys();
         // this.cursors.space.on("down", () => {
         //     this.player.fire();
