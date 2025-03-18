@@ -8,13 +8,13 @@ import { Basket } from "../gameobjects/Basket";
 import axios from 'axios';
 export const base_url = import.meta.env.VITE_API_URL;
 
-const DEBIT = "debit";
-const CREDIT = "credit";
-const ASSETS = "assets";
-const LIABITILITIES = "liabilities";
-const STAKEHOLDERS_EQUITY = "stakeholders_equity";
-const EXPENSES = "expenses";
-const REVENUES = "revenues";
+const DEBIT = "Debit";
+const CREDIT = "Credit";
+const ASSETS = "Assets";
+const LIABITILITIES = "Liabilities";
+const STAKEHOLDERS_EQUITY = "Stakeholders Equity";
+const EXPENSES = "Expenses";
+const REVENUES = "Revenues";
 
 const fetchData = async (num_ball, game_type, retries = 3, delay = 1000) => {
     let api_url = null;
@@ -43,10 +43,10 @@ const fetchData = async (num_ball, game_type, retries = 3, delay = 1000) => {
 const config = {
     num_balls_at_time: 4,
     // The following two are in secs
-    time_limit: 20000,
-    time_between_ball_spawns: 1000,
+    time_limit: 60000,
+    time_between_ball_spawns: 3000,
     // This is in frames
-    time_move_across_screen: 600
+    time_move_across_screen: 800
 }
 
 export class MainScene extends Scene {
@@ -115,7 +115,6 @@ export class MainScene extends Scene {
     create() {
         this.add.image(0, 0, "background")
             .setOrigin(0, 0);
-        this.add.image(0, this.scale.height, "floor").setOrigin(0, 1);
 
         // TO DO
         // Load from player choice
@@ -181,7 +180,7 @@ export class MainScene extends Scene {
             this.starting_conveyor_belts.push(this.conveyor_belts[this.conveyor_belts.length - 1]);
 
             let belt_num = 1
-            while (belt_num < num_belts - 1) {
+            while (belt_num < num_belts - 2) {
                 this.conveyor_belts.push(new ConveyorBelt(this));
 
                 let [x, y] = get_pos_from_belt_and_num(this, belt_label, belt_num);
@@ -217,7 +216,7 @@ export class MainScene extends Scene {
         // Player
         this.player = new Player({ scene: this });
 
-        // Cursor keys 
+        // Cursor keys
         this.cursors = this.input.keyboard.createCursorKeys();
         // this.cursors.space.on("down", () => {
         //     this.player.fire();
