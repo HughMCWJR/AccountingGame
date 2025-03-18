@@ -25,6 +25,7 @@ export class Player extends Physics.Arcade.Image {
             maxSize: 100,
             runChildUpdate: true
         });
+        this.setDepth(114514);
     }
 
     start() {
