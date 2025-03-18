@@ -59,7 +59,7 @@ export class MainScene extends Scene {
     points;
     game_over_timeout;
 
-    ballCount = 0;
+
     config = config
 
 
@@ -68,6 +68,7 @@ export class MainScene extends Scene {
     }
 
     init(data) {
+        this.ballCount = 0;
         this.cameras.main.fadeIn(1000, 0, 0, 0);
         const game_type = data.type || "accounting"; // "debit_credit" or "accounting"
         if (game_type == "debit_credit") {
