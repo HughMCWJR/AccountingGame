@@ -15,8 +15,6 @@ export class GameOverScene extends Scene {
         // Backgrounds
         this.add.image(0, 0, "background")
             .setOrigin(0, 0);
-        this.add.image(0, this.scale.height, "floor")
-            .setOrigin(0, 1);
 
         // Rectangles to show the text
         // Background rectangles
