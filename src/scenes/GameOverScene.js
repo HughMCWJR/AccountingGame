@@ -47,7 +47,7 @@ export class GameOverScene extends Scene {
             24
         ).setOrigin(0.5, 0.5);
 
-        const options = [{ type: "restart", screne: "MainScene" }, { type: "main_menu", screne: "MainMenuScene" }];
+        const options = [{ type: "restart", scene: "MainScene" }, { type: "main_menu", scene: "MainMenuScene" }];
         options.forEach((option, index) => {
             const text = this.add.text(this.scale.width / 2, this.scale.height / 4 * 3 + index * 50, option.type, {
                 fontSize: "24px",
@@ -56,7 +56,7 @@ export class GameOverScene extends Scene {
                 .setInteractive();
 
             text.on("pointerdown", () => {
-                this.scene.start(option.screne);
+                this.scene.start(option.scene);
             });
         });
 
