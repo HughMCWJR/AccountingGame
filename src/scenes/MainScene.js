@@ -103,6 +103,10 @@ export class MainScene extends Scene {
                 let starting_conveyor_belt = this.starting_conveyor_belts[Math.floor(Math.random() * this.starting_conveyor_belts.length)];
 
                 let ball = new Ball(this, starting_conveyor_belt.x, starting_conveyor_belt.y, this.elements[this.ballCount].name, this.elements[this.ballCount].type);
+                let hit_box_radius = Math.min(ball.hit_box_radius, this.ball_pit_height / 5 * 2);
+                ball.body.setCircle(hit_box_radius);
+                ball.body.offset.x = -hit_box_radius;
+                ball.body.offset.y = -hit_box_radius;
                 ball.start();
                 this.balls.add(ball);
                 this.ballCount++;
