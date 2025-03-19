@@ -66,9 +66,7 @@ export class Ball extends GameObjects.Container {
 
         // fix physics body
         // this.body.setSize(30, 30);
-        this.body.setCircle(newBallSize / 2);
-        this.body.offset.x = -newBallSize / 2;
-        this.body.offset.y = -newBallSize / 2;
+        this.hit_box_radius = newBallSize / 2;
 
         // set the ball properties
         //this.body.setAllowGravity(false);
