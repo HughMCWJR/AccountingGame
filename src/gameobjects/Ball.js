@@ -73,6 +73,10 @@ export class Ball extends GameObjects.Container {
         this.body.setCollideWorldBounds(true); // make the ball collide with the world bounds
 
         this.moved_by_belt_this_frame = false;
+
+        // Number of pit that this ball is laying in (null if not laying in a pit)
+        // (Starts at 0)
+        this.pit_number = null;
     }
 
     formatTextToSquare(text) {
@@ -162,7 +166,18 @@ export class Ball extends GameObjects.Container {
 
     // Send to pit for player to retry with ball
     goToPit() {
-        this.x = this.scene.ball_pit_x;
+        let pit_number = 0;
+        while (this.scene.pit_fullnesses[pit_number] === true) {
+            pit_number += 1;
+        }
+
+        if (pit_number > 3) {
+            throw Error("Got pit number greater than max of 3.");
+        }
+
+        this.pit_number = pit_number
+        this.scene.pit_fullnesses[this.pit_number] = true;
+        this.x = this.scene.get_ball_pit_x(this.pit_number);
         this.y = this.scene.ball_pit_y;
     }
 

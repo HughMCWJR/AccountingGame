@@ -102,6 +102,9 @@ export class MainScene extends Scene {
         this.D = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D);
         this.input.addPointer();
         this.mouse_down_last_frame = false;
+
+        // Store for each pit, whether it is full or not
+        this.pit_fullnesses = [false, false, false, false];
     }
 
     addBall() {
@@ -213,8 +216,8 @@ export class MainScene extends Scene {
 
         // Create ball return pits
         // (0 is the leftmost pit, there are four pits)
-        // this.get_ball_pit_x = (ball_pit_num) => (this.scale.width / 4) * (ball_pit_num + 0.5);
-        this.ball_pit_x = (this.scale.width / 4) * 2.5; 
+        this.get_ball_pit_x = (ball_pit_num) => (this.scale.width / 4) * (ball_pit_num + 0.5);
+        //this.ball_pit_x = (this.scale.width / 4) * 2.5; 
         this.ball_pit_y = (this.scale.height / 3) * 1.5;
         this.ball_pit_width = (this.scale.width / 4) - BELT_WIDTH;
         this.ball_pit_height = (this.scale.height / 3) - BELT_WIDTH;
