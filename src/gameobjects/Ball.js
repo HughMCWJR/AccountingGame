@@ -71,6 +71,8 @@ export class Ball extends GameObjects.Container {
         // set the ball properties
         //this.body.setAllowGravity(false);
         this.body.setCollideWorldBounds(true); // make the ball collide with the world bounds
+
+        this.moved_by_belt_this_frame = false;
     }
 
     formatTextToSquare(text) {
@@ -162,6 +164,10 @@ export class Ball extends GameObjects.Container {
     goToPit() {
         this.x = this.scene.ball_pit_x;
         this.y = this.scene.ball_pit_y;
+    }
+
+    update() {
+        this.moved_by_belt_this_frame = false;
     }
 
 }

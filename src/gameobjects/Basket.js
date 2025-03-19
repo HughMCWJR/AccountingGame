@@ -37,7 +37,7 @@ export class Basket extends GameObjects.Container {
 
     checkForBall(ball) {
 
-        if (ball.type === this.type) {
+        if (ball.type === this.type.toLowerCase()) {
             this.scene.points += 10;
             this.scene.scene.get("HudScene")
                 .update_points(this.scene.points);

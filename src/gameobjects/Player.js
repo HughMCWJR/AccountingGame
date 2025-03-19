@@ -26,6 +26,8 @@ export class Player extends Physics.Arcade.Image {
             runChildUpdate: true
         });
         this.setDepth(114514);
+
+        this.moved_by_belt_this_frame = false;
     }
 
     start() {
@@ -118,6 +120,8 @@ export class Player extends Physics.Arcade.Image {
     }
 
     update() {
+        this.moved_by_belt_this_frame = false;
+
         // Sinusoidal movement up and down up and down 2px
         this.y += Math.sin(this.scene.time.now / 200) * 0.10;
         // this.propulsion_fire.y = this.y;

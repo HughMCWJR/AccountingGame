@@ -40,13 +40,14 @@ const fetchData = async (num_ball, game_type, retries = 3, delay = 1000) => {
     }
 };
 
+const NUM_BALLS_AT_TIME = 4;
+
 const config = {
-    num_balls_at_time: 4,
     // The following two are in secs
     time_limit: 60000,
     time_between_ball_spawns: 3000,
     // This is in frames
-    time_move_across_screen: 800
+    time_move_across_screen: 300
 }
 
 export class MainScene extends Scene {
@@ -95,11 +96,17 @@ export class MainScene extends Scene {
         });
 
         this.keySpace = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+        this.W = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W);
+        this.A = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A);
+        this.S = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S);
+        this.D = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D);
+        this.input.addPointer();
+        this.mouse_down_last_frame = false;
     }
 
     addBall() {
         if (this.ballCount < this.elements.length) {
-            if (this.balls.getLength() < this.config.num_balls_at_time) {
+            if (this.balls.getLength() < NUM_BALLS_AT_TIME) {
                 let starting_conveyor_belt = this.starting_conveyor_belts[Math.floor(Math.random() * this.starting_conveyor_belts.length)];
 
                 let ball = new Ball(this, starting_conveyor_belt.x, starting_conveyor_belt.y, this.elements[this.ballCount].name, this.elements[this.ballCount].type);
@@ -204,8 +211,10 @@ export class MainScene extends Scene {
         const BELT_WIDTH = this.conveyor_belts[0].width;
         const BELT_HEIGHT = this.conveyor_belts[0].height;
 
-        // Create ball return pit
-        this.ball_pit_x = (this.scale.width / 4) * 2.5;
+        // Create ball return pits
+        // (0 is the leftmost pit, there are four pits)
+        // this.get_ball_pit_x = (ball_pit_num) => (this.scale.width / 4) * (ball_pit_num + 0.5);
+        this.ball_pit_x = (this.scale.width / 4) * 2.5; 
         this.ball_pit_y = (this.scale.height / 3) * 1.5;
         this.ball_pit_width = (this.scale.width / 4) - BELT_WIDTH;
         this.ball_pit_height = (this.scale.height / 3) - BELT_WIDTH;
@@ -233,9 +242,11 @@ export class MainScene extends Scene {
         function move_along_conveyor_belt(scene, conveyor_belt, player_or_ball) {
             let { belt_label } = conveyor_belt
 
-            if (player_or_ball.state === "picked") {
+            if (player_or_ball.state === "picked" || player_or_ball.moved_by_belt_this_frame) {
                 return;
             } // Ball already picked
+
+            player_or_ball.moved_by_belt_this_frame = true;
 
             if (belt_label == 1 || belt_label == 3) {
                 player_or_ball.y += scene.scale.height / config.time_move_across_screen;
@@ -325,6 +336,7 @@ export class MainScene extends Scene {
         this.conveyor_belts.forEach((conveyor_belt) => { conveyor_belt.update(time, delta) });
         //this.enemy_blue.update();
         this.player.update(time, delta);
+        this.balls.getChildren().forEach((ball) => { ball.update(time, delta) });
 
         // Sprite ordering
         // TEMP?
@@ -334,32 +346,45 @@ export class MainScene extends Scene {
         //})
 
         // Player movement entries
-        if (this.cursors.up.isDown) {
+        if (this.cursors.up.isDown || this.W.isDown) {
             this.player.move("up");
         }
-        if (this.cursors.down.isDown) {
+        if (this.cursors.down.isDown || this.S.isDown) {
             this.player.move("down");
         }
-        if (this.cursors.right.isDown) {
+        if (this.cursors.right.isDown || this.D.isDown) {
             this.player.move("right");
         }
-        if (this.cursors.left.isDown) {
+        if (this.cursors.left.isDown || this.A.isDown) {
             this.player.move("left");
         }
 
-        if (Phaser.Input.Keyboard.JustDown(this.keySpace)) {
+        if (Phaser.Input.Keyboard.JustDown(this.keySpace) || (this.input.activePointer.primaryDown && !this.mouse_down_last_frame)) {
+            
+            this.mouse_down_last_frame = this.input.activePointer.primaryDown;
+            
             if (this.player.ball && this.player.ball.state === "picked") {
                 this.player.drop();
                 return
             }
-            let ball = this.physics.closest(this.player, this.balls.getChildren());
-            if (Phaser.Math.Distance.Between(this.player.x, this.player.y, ball.x, ball.y) < 30) {
-                this.player.pick(ball);
-            }
+            //let ball = this.physics.closest(this.player, this.balls.getChildren());
+            let picked_up_ball = false;
+            this.balls.getChildren().forEach((ball) => {
+                if (picked_up_ball) {
+                    return;
+                }
+
+                let player_bounds = this.player.getBounds();
+                let ball_bounds = ball.getBounds();
+                // if (Phaser.Math.Distance.Between(this.player.x, this.player.y, ball.x, ball.y) < 30) {
+                if (Phaser.Geom.Intersects.RectangleToRectangle(ball_bounds, player_bounds)) {
+                    this.player.pick(ball);
+                    picked_up_ball = true;
+                }
+            })
+        } else {
+            this.mouse_down_last_frame = this.input.activePointer.primaryDown;
         };
-
-        // d key to drop the ball
-
 
     }
 }
