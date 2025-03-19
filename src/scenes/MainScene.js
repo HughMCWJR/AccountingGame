@@ -1,6 +1,5 @@
 import { NONE, Scene } from "phaser";
 import { Player } from "../gameobjects/Player";
-import { BlueEnemy } from "../gameobjects/BlueEnemy";
 import { ConveyorBelt } from "../gameobjects/ConveyorBelt";
 
 import { Ball } from "../gameobjects/Ball";
@@ -96,6 +95,7 @@ export class MainScene extends Scene {
         });
 
         this.keySpace = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+        this.keyEsc = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ESC);
         this.W = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W);
         this.A = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A);
         this.S = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S);
@@ -214,7 +214,7 @@ export class MainScene extends Scene {
         // Create ball return pits
         // (0 is the leftmost pit, there are four pits)
         // this.get_ball_pit_x = (ball_pit_num) => (this.scale.width / 4) * (ball_pit_num + 0.5);
-        this.ball_pit_x = (this.scale.width / 4) * 2.5; 
+        this.ball_pit_x = (this.scale.width / 4) * 2.5;
         this.ball_pit_y = (this.scale.height / 3) * 1.5;
         this.ball_pit_width = (this.scale.width / 4) - BELT_WIDTH;
         this.ball_pit_height = (this.scale.height / 3) - BELT_WIDTH;
@@ -319,9 +319,8 @@ export class MainScene extends Scene {
                 callback: () => {
                     if (this.game_over_timeout === 0) {
                         // You need remove the event listener to avoid duplicate events.
-                        this.game.events.removeListener("start-game");
                         // It is necessary to stop the scenes launched in parallel.
-                        this.scene.stop("HudScene");
+                        this.game.events.emit("exit-game");
                         this.scene.start("GameOverScene", { points: this.points });
                     } else {
                         this.game_over_timeout--;
@@ -329,6 +328,10 @@ export class MainScene extends Scene {
                     }
                 }
             });
+        });
+        this.game.events.on("exit-game", () => {
+            this.game.events.removeListener("start-game");
+            this.scene.stop("HudScene");
         });
     }
 
@@ -359,10 +362,17 @@ export class MainScene extends Scene {
             this.player.move("left");
         }
 
+
+        if (Phaser.Input.Keyboard.JustDown(this.keyEsc)) {
+            // stop the main scene
+            this.scene.pause();
+            this.scene.launch("PauseScene");
+        }
+
         if (Phaser.Input.Keyboard.JustDown(this.keySpace) || (this.input.activePointer.primaryDown && !this.mouse_down_last_frame)) {
-            
+
             this.mouse_down_last_frame = this.input.activePointer.primaryDown;
-            
+
             if (this.player.ball && this.player.ball.state === "picked") {
                 this.player.drop();
                 return
