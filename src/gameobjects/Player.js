@@ -25,6 +25,9 @@ export class Player extends Physics.Arcade.Image {
             maxSize: 100,
             runChildUpdate: true
         });
+        this.setDepth(114514);
+
+        this.moved_by_belt_this_frame = false;
     }
 
     start() {
@@ -108,6 +111,10 @@ export class Player extends Physics.Arcade.Image {
         } // Ball already picked
         this.ball = ball;
         this.ball.state = "picked";
+        if (this.ball.pit_number != null) {
+            this.scene.pit_fullnesses[this.ball.pit_number] = false;
+            this.ball.pit_number = null;
+        }
     }
 
     drop() {
@@ -117,6 +124,8 @@ export class Player extends Physics.Arcade.Image {
     }
 
     update() {
+        this.moved_by_belt_this_frame = false;
+
         // Sinusoidal movement up and down up and down 2px
         this.y += Math.sin(this.scene.time.now / 200) * 0.10;
         // this.propulsion_fire.y = this.y;

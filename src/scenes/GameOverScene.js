@@ -27,13 +27,6 @@ export class GameOverScene extends Scene {
             120,
             0xffffff
         ).setAlpha(.8).setOrigin(0, 0.5);
-        this.add.rectangle(
-            0,
-            this.scale.height / 2 + 105,
-            this.scale.width,
-            90,
-            0x000000
-        ).setAlpha(.8).setOrigin(0, 0.5);
 
         const gameover_text = this.add.bitmapText(
             this.scale.width / 2,
@@ -54,23 +47,18 @@ export class GameOverScene extends Scene {
             24
         ).setOrigin(0.5, 0.5);
 
-        this.add.bitmapText(
-            this.scale.width / 2,
-            this.scale.height / 2 + 130,
-            "pixelfont",
-            "CLICK TO RESTART",
-            24
-        ).setOrigin(0.5, 0.5);
+        const options = [{ type: "restart", scene: "MainScene" }, { type: "main_menu", scene: "MainMenuScene" }];
+        options.forEach((option, index) => {
+            const text = this.add.text(this.scale.width / 2, this.scale.height / 4 * 3 + index * 50, option.type, {
+                fontSize: "24px",
+                color: "#ffffff"
+            }).setOrigin(0.5)
+                .setInteractive();
 
-        // Click to restart
-        this.time.addEvent({
-            delay: 100,
-            callback: () => {
-                this.input.on("pointerdown", () => {
-                    this.scene.start("MainScene");
-                });
-            }
-        
-        })
+            text.on("pointerdown", () => {
+                this.scene.start(option.scene);
+            });
+        });
+
     }
 }

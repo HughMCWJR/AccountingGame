@@ -65,13 +65,18 @@ export class Ball extends GameObjects.Container {
         this.scene.physics.add.existing(this);
 
         // fix physics body
-        this.body.setSize(30, 30);
-        this.body.offset.x = -15;
-        this.body.offset.y = -15;
+        // this.body.setSize(30, 30);
+        this.hit_box_radius = newBallSize / 2;
 
         // set the ball properties
         //this.body.setAllowGravity(false);
         this.body.setCollideWorldBounds(true); // make the ball collide with the world bounds
+
+        this.moved_by_belt_this_frame = false;
+
+        // Number of pit that this ball is laying in (null if not laying in a pit)
+        // (Starts at 0)
+        this.pit_number = null;
     }
 
     formatTextToSquare(text) {
@@ -84,7 +89,7 @@ export class Ball extends GameObjects.Container {
 
         // split the word at the last "-" within the available range
         const trySplitWordAtHyphen = (word, available) => {
-            // 先在 available 范围内寻找最后一个 "-"（保证前缀尽量长）
+            // first find the last "-" within the available range (to make the prefix as long as possible)
             let idx = word.lastIndexOf('-', available - 1);
             if (idx !== -1) {
                 return [word.substring(0, idx + 1), word.substring(idx + 1)];
@@ -161,8 +166,23 @@ export class Ball extends GameObjects.Container {
 
     // Send to pit for player to retry with ball
     goToPit() {
-        this.x = this.scene.ball_pit_x;
+        let pit_number = 0;
+        while (this.scene.pit_fullnesses[pit_number] === true) {
+            pit_number += 1;
+        }
+
+        if (pit_number > 3) {
+            throw Error("Got pit number greater than max of 3.");
+        }
+
+        this.pit_number = pit_number
+        this.scene.pit_fullnesses[this.pit_number] = true;
+        this.x = this.scene.get_ball_pit_x(this.pit_number);
         this.y = this.scene.ball_pit_y;
+    }
+
+    update() {
+        this.moved_by_belt_this_frame = false;
     }
 
 }

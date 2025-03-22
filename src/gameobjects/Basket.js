@@ -35,15 +35,18 @@ export class Basket extends GameObjects.Container {
         this.body.setImmovable(true);
     }
 
+    // Found overlap betwene ball and basket, check what to do
     checkForBall(ball) {
 
-        if (ball.type === this.type) {
-            this.scene.points += 10;
-            this.scene.scene.get("HudScene")
-                .update_points(this.scene.points);
-            ball.destroyBall(); // destroy the ball
-        } else {
-            ball.goToPit();
+        if (ball.state != "picked" && ball.pit_number == null) {
+            if (ball.type === this.type.toLowerCase()) {
+                this.scene.points += 10;
+                this.scene.scene.get("HudScene")
+                    .update_points(this.scene.points);
+                ball.destroyBall(); // destroy the ball
+            } else {
+                ball.goToPit();
+            }
         }
 
     }
