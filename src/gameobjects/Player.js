@@ -111,6 +111,10 @@ export class Player extends Physics.Arcade.Image {
         } // Ball already picked
         this.ball = ball;
         this.ball.state = "picked";
+        if (this.ball.pit_number != null) {
+            this.scene.pit_fullnesses[this.ball.pit_number] = false;
+            this.ball.pit_number = null;
+        }
     }
 
     drop() {
