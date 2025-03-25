@@ -10,7 +10,14 @@ export class MainMenuScene extends Scene {
     }
 
     create() {
-
+        if (this.sound.locked) {
+            this.sound.once('unlocked', () => {
+                this.game.musicManager.play(this,
+                    'menu_bgm');
+            });
+        } else {
+            this.game.musicManager.play(this, 'menu_bgm');
+        }
         this.add.text(this.scale.width / 2, 100, "Accounting Game", {
             fontSize: "32px",
             color: "#ffffff"
@@ -29,6 +36,9 @@ export class MainMenuScene extends Scene {
                 .setInteractive();
 
             text.on("pointerdown", () => {
+                this.sound.play('selection', {
+                    volume: 1
+                });
                 selectedOptions.type = option;
                 this.startGame(selectedOptions);
             });

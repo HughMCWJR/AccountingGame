@@ -34,6 +34,9 @@ export class PauseScene extends Scene {
 
         // click continue to resume the game
         this.resumeText.on('pointerdown', () => {
+            this.sound.play('selection', {
+                volume: 1
+            });
             if (!this.isResuming) {
                 this.isResuming = true;
                 // disable the buttons
@@ -70,6 +73,9 @@ export class PauseScene extends Scene {
 
         this.exitText.on('pointerdown', () => {
             // stop MainScene and start MainMenuScene
+            this.sound.play('selection', {
+                volume: 1
+            });
             this.game.events.emit("exit-game");
             this.scene.stop("MainScene");
             this.scene.start("MainMenuScene");
