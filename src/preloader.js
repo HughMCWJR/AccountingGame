@@ -9,6 +9,10 @@ export class Preloader extends Phaser.Scene {
         // Load all the assets
         this.load.setPath("assets");
         this.load.image("logo", "logo.png");
+        this.load.image("space_bar", "space_bar.jpg");
+        this.load.image("primary_click", "primary_click.jpg");
+        this.load.image("arrow_keys", "arrow_keys.jpg");
+        this.load.image("WASD", "WASD.jpg");
         this.load.image("background", "background.png");
 
         this.load.image("player", "player/aubie.png");
