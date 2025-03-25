@@ -44,8 +44,15 @@ export class Basket extends GameObjects.Container {
                 this.scene.scene.get("HudScene")
                     .update_points(this.scene.points);
                 ball.destroyBall(); // destroy the ball
+                this.scene.sound.play('correct', {
+                    volume: 1
+                });
             } else {
+                this.scene.sound.play('error', {
+                    volume: 1
+                });
                 ball.goToPit();
+
             }
         }
 

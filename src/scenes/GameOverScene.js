@@ -12,6 +12,14 @@ export class GameOverScene extends Scene {
     }
 
     create() {
+        if (this.sound.locked) {
+            this.sound.once('unlocked', () => {
+                this.game.musicManager.play(this,
+                    'menu_bgm');
+            });
+        } else {
+            this.game.musicManager.play(this, 'menu_bgm');
+        }
         // Backgrounds
         this.add.image(0, 0, "background")
             .setOrigin(0, 0);
@@ -54,6 +62,9 @@ export class GameOverScene extends Scene {
                 .setInteractive();
 
             text.on("pointerdown", () => {
+                this.sound.play('selection', {
+                    volume: 1
+                });
                 this.scene.start(option.scene);
             });
         });

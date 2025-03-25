@@ -46,7 +46,7 @@ const config = {
     time_limit: 60000,
     time_between_ball_spawns: 3000,
     // This is in frames
-    time_move_across_screen: 300
+    time_move_across_screen: 500
 }
 
 export class MainScene extends Scene {
@@ -127,6 +127,14 @@ export class MainScene extends Scene {
     }
 
     create() {
+        if (this.sound.locked) {
+            this.sound.once('unlocked', () => {
+                this.game.musicManager.play(this,
+                    'game_bgm');
+            });
+        } else {
+            this.game.musicManager.play(this, 'game_bgm');
+        }
         this.add.image(0, 0, "background")
             .setOrigin(0, 0);
 
@@ -216,7 +224,7 @@ export class MainScene extends Scene {
 
         // Create ball return pits
         // (0 is the leftmost pit, there are four pits)
-        this.get_ball_pit_x = (ball_pit_num) => (this.scale.width / 4) * (ball_pit_num + 0.5); 
+        this.get_ball_pit_x = (ball_pit_num) => (this.scale.width / 4) * (ball_pit_num + 0.5);
         this.ball_pit_y = (this.scale.height / 3) * 1.5;
         this.ball_pit_width = (this.scale.width / 4) - BELT_WIDTH;
         this.ball_pit_height = (this.scale.height / 3) - BELT_WIDTH;
