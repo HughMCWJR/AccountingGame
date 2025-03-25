@@ -20,7 +20,7 @@ export class Preloader extends Phaser.Scene {
         // this.load.animation("propulsion-fire-anim", "player/propulsion/propulsion-fire_anim.json");
 
         // Conveyor Belts
-	    this.load.image("belt", "objects/conveyor-belt/Conveyor_Belt_Base.png")
+        this.load.image("belt", "objects/conveyor-belt/Conveyor_Belt_Base.png")
         this.load.atlas("up-belt", "objects/conveyor-belt/up-belt/up-belt.png", "objects/conveyor-belt/up-belt/up-belt_atlas.json");
         this.load.animation("up-belt-anim", "objects/conveyor-belt/up-belt/up-belt_anim.json");
         this.load.atlas("down-belt", "objects/conveyor-belt/down-belt/down-belt.png", "objects/conveyor-belt/down-belt/down-belt_atlas.json");
@@ -48,6 +48,13 @@ export class Preloader extends Phaser.Scene {
         // Fonts
         this.load.bitmapFont("pixelfont", "fonts/pixelfont.png", "fonts/pixelfont.xml");
         this.load.image("knighthawks", "fonts/knight3.png");
+
+        // Audio
+        this.load.audio("game_bgm", "music/game_bgm.wav");
+        this.load.audio("menu_bgm", "music/menu_bgm.mp3");
+        this.load.audio("selection", "music/selection_sound.wav");
+        this.load.audio("correct", "music/correct_sound.wav");
+        this.load.audio("error", "music/error_sound.mp3");
 
         // Event to update the loading bar
         this.load.on("progress", (progress) => {

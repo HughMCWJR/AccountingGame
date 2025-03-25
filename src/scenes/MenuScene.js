@@ -10,7 +10,6 @@ export class MenuScene extends Scene {
     }
 
     create() {
-
         // Background rectangles
         this.add.rectangle(
             0,
@@ -83,7 +82,7 @@ export class MenuScene extends Scene {
             "CLICK TO START",
             24
         ).setOrigin(0.5, 0.5);
-        
+
 
         // Tween to blink the text
         this.tweens.add({
@@ -97,6 +96,9 @@ export class MenuScene extends Scene {
 
         // Send start-game event when user clicks
         this.input.on("pointerdown", () => {
+            this.sound.play('selection', {
+                volume: 1
+            });
             this.game.events.emit("start-game");
         });
     }
