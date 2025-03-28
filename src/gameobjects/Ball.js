@@ -8,7 +8,7 @@ export class Ball extends GameObjects.Container {
     // ...so it doesn't change direction at intersections
     direction_belt_label = null;
 
-    constructor(scene, x, y, name, type) {
+    constructor(scene, x, y, name, type, difficulty) {
         super(scene, x, y);
         //this.postFX.addBloom(0xffffff, 1, 1, 2, 1.2);
         this.name = name;
@@ -23,8 +23,7 @@ export class Ball extends GameObjects.Container {
 
         this.ballImage.setTintFill(0xffffff);
 
-        //const textContent = this.formatTextToSquare(this.name + " - " + type);
-        const textContent = this.formatTextToSquare(this.name);
+        const textContent = difficulty === 0 ? this.formatTextToSquare(`${this.name}-${this.type}`) : this.formatTextToSquare(this.name);
 
         this.textLabel = new GameObjects.Text(scene, 0, 0, textContent, {
             fontSize: "14px",

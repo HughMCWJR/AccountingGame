@@ -69,6 +69,7 @@ export class MainScene extends Scene {
 
     init(data) {
         this.ballCount = 0;
+        this.difficulty = parseInt(localStorage.getItem('difficulty') || 1);
         this.cameras.main.fadeIn(1000, 0, 0, 0);
         const game_type = data.type || "accounting"; // "debit_credit" or "accounting"
         if (game_type == "debit_credit") {
@@ -112,7 +113,7 @@ export class MainScene extends Scene {
             if (this.balls.getLength() < NUM_BALLS_AT_TIME) {
                 let starting_conveyor_belt = this.starting_conveyor_belts[Math.floor(Math.random() * this.starting_conveyor_belts.length)];
 
-                let ball = new Ball(this, starting_conveyor_belt.x, starting_conveyor_belt.y, this.elements[this.ballCount].name, this.elements[this.ballCount].type);
+                let ball = new Ball(this, starting_conveyor_belt.x, starting_conveyor_belt.y, this.elements[this.ballCount].name, this.elements[this.ballCount].type, this.difficulty);
                 let hit_box_radius = Math.min(ball.hit_box_radius, this.ball_pit_height / 5 * 2);
                 ball.body.setCircle(hit_box_radius);
                 ball.body.offset.x = -hit_box_radius;
