@@ -7,11 +7,11 @@ export class PauseScene extends Scene {
 
     create() {
         // show the pause screen
-        // this.add.text(this.scale.width / 2, this.scale.height / 2 - 80, "Game Pause", {
-        //     fontSize: "32px",
-        //     color: "#ffffff",
-        //     align: "center"
-        // }).setOrigin(0.5);
+        this.add.text(this.scale.width / 2, this.scale.height / 2 - 80, "Game Pause", {
+            fontSize: "32px",
+            color: "#ffffff",
+            align: "center"
+        }).setOrigin(0.5);
 
         // create the "continue" button
         this.resumeText = this.add.text(this.scale.width / 2, this.scale.height / 2 - 20, "Continue", {

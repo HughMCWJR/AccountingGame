@@ -43,6 +43,16 @@ export class MainMenuScene extends Scene {
                 this.startGame(selectedOptions);
             });
         });
+
+        const settingsText = this.add.text(this.scale.width / 2, 300, "Settings", {
+            fontSize: "24px",
+            color: "#ffffff"
+        }).setOrigin(0.5).setInteractive();
+
+        settingsText.on("pointerdown", () => {
+            this.sound.play('selection', { volume: 1 });
+            this.scene.start("SettingsScene"); // Go to settings scene
+        });
     }
 
     startGame(selectedOptions) {
