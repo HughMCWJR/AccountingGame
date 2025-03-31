@@ -3,9 +3,11 @@ export default class MusicManager {
         this.game = game;
         this.currentMusic = null;
         this.currentKey = null;
+        this.default_config = { loop: true, volume: parseFloat(localStorage.getItem('volume')) || 1 };
     }
 
-    play(scene, key, config = { loop: true, volume: 0.8 }) {
+    play(scene, key, config) {
+        config = config || this.default_config;
         // avoid playing the same music
         if (this.currentKey === key && this.currentMusic?.isPlaying) {
             return;
@@ -50,6 +52,7 @@ export default class MusicManager {
     }
 
     setVolume(volume) {
+        this.default_config.volume = volume;
         if (this.currentMusic) {
             this.currentMusic.setVolume(volume);
         }
