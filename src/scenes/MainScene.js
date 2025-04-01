@@ -82,7 +82,9 @@ export class MainScene extends Scene {
             this.config.belt_types = [ASSETS, LIABITILITIES, STAKEHOLDERS_EQUITY, REVENUES, EXPENSES];
             this.config.belt_labels = [1, 2, 3, 4, 5];
         }
-
+        this.answer_stats = new Map(
+            this.config.basket_types.map((type, index) => [type, { correct: 0, incorrect: 0 }])
+        );
         const NUM_BALLS = Math.ceil(this.config.time_limit / this.config.time_between_ball_spawns);
 
         // Reset points
@@ -126,6 +128,30 @@ export class MainScene extends Scene {
             throw new Error("Ran out of balls");
         }
     }
+
+    // Found overlap betwene ball and basket, check what to do
+    checkForBall(ball, basket) {
+
+        if (ball.state != "picked" && ball.pit_number == null) {
+            if (ball.type === basket.type.toLowerCase()) {
+                this.points += 10;
+                this.scene.get("HudScene").update_points(this.points);
+                ball.destroyBall(); // destroy the ball
+                this.answer_stats.get(basket.type).correct += 1; // update the correct count for the basket type`
+                this.sound.play('correct', {
+                    volume: 1
+                });
+            } else {
+                this.sound.play('error', {
+                    volume: 1
+                });
+                ball.goToPit();
+                this.answer_stats.get(basket.type).incorrect += 1; // update the incorrect count for the basket type
+            }
+        }
+
+    }
+
 
     create() {
         if (this.sound.locked) {
@@ -297,7 +323,7 @@ export class MainScene extends Scene {
                 }
             }
         });
-        this.physics.add.overlap(this.balls, this.baskets, (ball, basket) => { basket.checkForBall(ball) });
+        this.physics.add.overlap(this.balls, this.baskets, (ball, basket) => { this.checkForBall(ball, basket) });
 
         // Overlap enemy with bullets
         this.physics.add.overlap(this.player.bullets, this.enemy_blue, (enemy, bullet) => {
