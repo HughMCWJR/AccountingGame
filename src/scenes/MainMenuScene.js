@@ -18,7 +18,7 @@ export class MainMenuScene extends Scene {
         } else {
             this.game.musicManager.play(this, 'menu_bgm');
         }
-        this.add.text(this.scale.width / 2, 100, "Accounting Game", {
+        this.add.text(this.scale.width / 2, 100, "Accounting Fundamentals", {
             fontSize: "32px",
             color: "#ffffff"
         }).setOrigin(0.5);
@@ -28,8 +28,16 @@ export class MainMenuScene extends Scene {
             type: "debit_credit"
         };
 
+        function get_option_text(option) {
+            if (option == "debit_credit") {
+                return "Debit_vs._Credit";
+            } else if (option == "accounting"){
+                return "The_Five_Building_Blocks";
+            }
+        }
+
         options.forEach((option, index) => {
-            const text = this.add.text(this.scale.width / 2, 200 + index * 50, option, {
+            const text = this.add.text(this.scale.width / 2, 200 + index * 50, get_option_text(option), {
                 fontSize: "24px",
                 color: "#ffffff"
             }).setOrigin(0.5)
@@ -44,7 +52,7 @@ export class MainMenuScene extends Scene {
             });
         });
 
-        const settingsText = this.add.text(this.scale.width / 2, 300, "Settings", {
+        const settingsText = this.add.text(this.scale.width / 2, 400, "Settings", {
             fontSize: "24px",
             color: "#ffffff"
         }).setOrigin(0.5).setInteractive();
