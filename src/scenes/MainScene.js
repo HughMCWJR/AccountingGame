@@ -43,7 +43,7 @@ const NUM_BALLS_AT_TIME = 4;
 
 const config = {
     // The following two are in secs
-    time_limit: 60000,
+    time_limit: 90000,
     time_between_ball_spawns: 3000,
     // This is in frames
     time_move_across_screen: 500
@@ -195,20 +195,20 @@ export class MainScene extends Scene {
             }
 
             // ___1___2___3___
+            // |  ^   v   v
+            // 4>
             // |
-            // 4
-            // |
-            // 5
+            // 5<
             // |
             // belt_num: int - how many belts along it is (0 is the first one)
             function get_pos_from_belt_and_num(scene, belt_label, belt_num) {
                 let x;
                 let y;
 
-                if (belt_label == 1 || belt_label == 3) {
+                if (belt_label == 2 || belt_label == 3) {
                     x = ((scene.scale.width / 4) * belt_label)
                     y = belt_num * BELT_HEIGHT + (BELT_HEIGHT / 2)
-                } else if (belt_label == 2) {
+                } else if (belt_label == 1) {
                     x = ((scene.scale.width / 4) * belt_label)
                     y = scene.scale.height - (belt_num * BELT_HEIGHT + (BELT_HEIGHT / 2))
                 } else if (belt_label == 5) {
@@ -245,6 +245,17 @@ export class MainScene extends Scene {
 
             this.baskets.push(new Basket(this, basket_x, basket_y, belt_types[belt_label - 1]));
         });
+    
+        // Reverse rendering order
+        this.conveyor_belts.forEach((belt) => {
+            if (belt.belt_label == 1 || belt.belt_label == 2 || belt.belt_label == 3) {
+                this.children.bringToTop(belt);
+            }
+        })
+        // Fix it so baskets are in front
+        this.baskets.forEach((basket) => {
+            this.children.bringToTop(basket);
+        })
 
         const BELT_WIDTH = this.conveyor_belts[0].width;
         const BELT_HEIGHT = this.conveyor_belts[0].height;
@@ -285,9 +296,9 @@ export class MainScene extends Scene {
 
             player_or_ball.moved_by_belt_this_frame = true;
 
-            if (belt_label == 1 || belt_label == 3) {
+            if (belt_label == 2 || belt_label == 3) {
                 player_or_ball.y += scene.scale.height / config.time_move_across_screen;
-            } else if (belt_label == 2) {
+            } else if (belt_label == 1) {
                 player_or_ball.y -= scene.scale.height / config.time_move_across_screen;
             } else if (belt_label == 4) {
                 player_or_ball.x -= scene.scale.width / config.time_move_across_screen;

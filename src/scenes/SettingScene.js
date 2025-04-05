@@ -2,12 +2,12 @@ import { Scene } from "phaser";
 
 // Difficulty + descriptions
 const DifficultySettings = [
-    { name: 'Rookies', description: 'Can I play it, Daddy?', level: 0 },
-    { name: 'Standard', description: 'Standard challenge. Balanced for most players.', level: 1 },
-    { name: 'Hardcore', description: "For experienced players. Bring'em on", level: 2 },
-    { name: 'Elite', description: 'For the bravest of players. Do or die', level: 3 },
-    { name: 'Expert', description: 'For the insane and crazy players. Call me Terror-Billy!', level: 4 },
-    { name: 'Impossible', description: 'You will never win. It is your Ultra Nightmare', level: 5 }
+    { name: 'Tutorial', description: 'Answers are given as a good start for studying', level: 0 },
+    { name: 'Standard', description: 'Dynamic difficulty that tries to challenge you', level: 1 }
+    // { name: 'Hardcore', description: "For experienced players. Bring'em on", level: 2 },
+    // { name: 'Elite', description: 'For the bravest of players. Do or die', level: 3 },
+    // { name: 'Expert', description: 'For the insane and crazy players. Call me Terror-Billy!', level: 4 },
+    // { name: 'Impossible', description: 'You will never win. It is your Ultra Nightmare', level: 5 }
 ];
 
 // Default settings if no localStorage

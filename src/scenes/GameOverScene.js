@@ -51,15 +51,16 @@ export class GameOverScene extends Scene {
             "pixelfont",
             `YOUR POINTS: ${this.end_points}`,
             24
-        ).setOrigin(0.5, 0.5);
+        ).setOrigin(0.5, 0.5).setTint(0x000000);
 
-        const options = [{ type: "restart", scene: "MainScene" }, { type: "main_menu", scene: "MainMenuScene" }];
+        const options = [{ type: "Restart", scene: "MainScene" }, { type: "Main_Menu", scene: "MainMenuScene" }];
         options.forEach((option, index) => {
             const text = this.add.text(this.scale.width / 2, this.scale.height / 4 * 3 + index * 50, option.type, {
                 fontSize: "24px",
                 color: "#ffffff"
             }).setOrigin(0.5)
-                .setInteractive();
+                .setInteractive()
+                .setTint(0x000000);
 
             text.on("pointerdown", () => {
                 this.sound.play('selection', {
