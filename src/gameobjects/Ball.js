@@ -23,7 +23,10 @@ export class Ball extends GameObjects.Container {
 
         this.ballImage.setTintFill(0xffffff);
 
-        const textContent = difficulty === 0 ? this.formatTextToSquare(`${this.name}-${this.type}`) : this.formatTextToSquare(this.name);
+        const typeAsText = this.type.split("_").map((word) => {
+            return word.charAt(0).toUpperCase() + word.slice(1);
+        }).join(" ");
+        const textContent = difficulty === 0 ? this.formatTextToSquare(`${this.name}-${typeAsText}`) : this.formatTextToSquare(this.name);
 
         this.textLabel = new GameObjects.Text(scene, 0, 0, textContent, {
             fontSize: "14px",
