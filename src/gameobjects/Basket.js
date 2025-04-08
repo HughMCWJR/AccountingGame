@@ -30,8 +30,10 @@ export class Basket extends GameObjects.Container {
 
         this.body.setSize(this.basketImage.displayWidth, this.basketImage.displayHeight);
         this.body.setOffset(-this.basketImage.displayWidth / 2, -this.basketImage.displayHeight / 2);
-
         this.body.setImmovable(true);
+
+        this.setSize(this.basketImage.displayWidth, this.basketImage.displayHeight);
+
     }
 
 

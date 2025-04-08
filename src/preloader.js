@@ -6,7 +6,43 @@ export class Preloader extends Phaser.Scene {
     }
 
     preload() {
-        // Load all the assets
+        const { width, height } = this.cameras.main;
+
+        // Create a loading bar
+        const progressBox = this.add.graphics();
+        const progressBar = this.add.graphics();
+
+        progressBox.fillStyle(0x222222, 0.8);
+        progressBox.fillRect(width / 2 - 160, height / 2 - 25, 320, 50);
+
+        // Create a loading text
+        const loadingText = this.add.text(width / 2, height / 2 - 60, 'Loading...', {
+            fontSize: '24px',
+            fill: '#ffffff',
+        }).setOrigin(0.5);
+
+        const percentText = this.add.text(width / 2, height / 2, '0%', {
+            fontSize: '20px',
+            fill: '#000000',
+        }).setOrigin(0.5);
+
+        // update the loading bar
+        this.load.on('progress', (value) => {
+            progressBar.clear();
+            progressBar.fillStyle(0xffffff, 1);
+            progressBar.fillRect(width / 2 - 150, height / 2 - 15, 300 * value, 30);
+
+            percentText.setText(parseInt(value * 100) + '%');
+        });
+
+        // when the loading is complete, destroy the loading bar and text
+        this.load.on('complete', () => {
+            loadingText.setText('Loading complete!');
+            progressBar.destroy();
+            progressBox.destroy();
+            percentText.destroy();
+        });
+
         this.load.setPath("assets");
         this.load.image("logo", "logo.png");
         this.load.image("space_bar", "space_bar.jpg");
