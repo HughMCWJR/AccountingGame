@@ -52,7 +52,7 @@ const NUM_BALLS_AT_TIME = 4;
 
 const config = {
     // The following two are in secs
-    time_limit: 4000,
+    time_limit: 90000,
     time_between_ball_spawns: 3000,
     // This is in frames
     time_move_across_screen: 500
