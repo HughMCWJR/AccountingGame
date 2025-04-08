@@ -4,6 +4,7 @@ import { ConveyorBelt } from "../gameobjects/ConveyorBelt";
 
 import { Ball } from "../gameobjects/Ball";
 import { Basket } from "../gameobjects/Basket";
+import { TooltipManager } from "../gameobjects/Tooltips";
 import axios from 'axios';
 export const base_url = import.meta.env.VITE_API_URL;
 
@@ -14,7 +15,15 @@ const LIABITILITIES = "Liabilities";
 const STAKEHOLDERS_EQUITY = "Stakeholders Equity";
 const EXPENSES = "Expenses";
 const REVENUES = "Revenues";
-
+const DESCRIPTION_MAP = new Map([
+    [DEBIT, "Debit"],
+    [CREDIT, "Credit"],
+    [ASSETS, "A present right of an entity to an economic benefit."],
+    [LIABITILITIES, "A present obligation that requires an entity to transferor otherwise provide economic benefits to others."],
+    [STAKEHOLDERS_EQUITY, "The residual interest in the assets of anentity that remains after deducting its liabilities."],
+    [EXPENSES, "Expenses are outflows or other using up of assets of anentity or incurrences of its liabilities (or a combination of both) from delivering orproducing goods, rendering services, or carrying out other activities"],
+    [REVENUES, "Inflows or other enhancements of assets of an entityor settlements of its liabilities (or a combination of both) from delivering orproducing goods, rendering services, or carrying out other activities"],
+]);
 const fetchData = async (num_ball, game_type, retries = 3, delay = 1000) => {
     let api_url = null;
     if (game_type == "debit_credit") {
@@ -105,6 +114,8 @@ export class MainScene extends Scene {
 
         // Store for each pit, whether it is full or not
         this.pit_fullnesses = [false, false, false, false];
+
+        this.tooltip = new TooltipManager(this);
     }
 
     addBall() {
@@ -239,10 +250,12 @@ export class MainScene extends Scene {
             let basket_x;
             let basket_y;
             [basket_x, basket_y] = get_pos_from_belt_and_num(this, belt_label, belt_num);
+            let basket = new Basket(this, basket_x, basket_y, belt_types[belt_label - 1]);
+            this.tooltip.attachTo(basket, DESCRIPTION_MAP.get(belt_types[belt_label - 1]));
+            this.baskets.push(basket);
 
-            this.baskets.push(new Basket(this, basket_x, basket_y, belt_types[belt_label - 1]));
         });
-    
+
         // Reverse rendering order
         this.conveyor_belts.forEach((belt) => {
             if (belt.belt_label == 1 || belt.belt_label == 2 || belt.belt_label == 3) {
@@ -379,6 +392,8 @@ export class MainScene extends Scene {
             this.game.events.removeListener("start-game");
             this.scene.stop("HudScene");
         });
+
+
     }
 
     update(time, delta) {
@@ -406,6 +421,21 @@ export class MainScene extends Scene {
         }
         if (this.cursors.left.isDown || this.A.isDown) {
             this.player.move("left");
+        }
+
+        // Player movement and screen wrap
+        const { width, height } = this.sys.canvas;
+
+        if (this.player.x - this.player.width / 2 > width) {
+            this.player.x = -this.player.width / 2;
+        } else if (this.player.x + this.player.width / 2 < 0) {
+            this.player.x = width + this.player.width / 2;
+        }
+
+        if (this.player.y - this.player.height / 2 > height) {
+            this.player.y = -this.player.height / 2;
+        } else if (this.player.y + this.player.height / 2 < 0) {
+            this.player.y = height + this.player.height / 2;
         }
 
 

@@ -73,18 +73,18 @@ export class Player extends Physics.Arcade.Image {
 
     move(direction) {
         if (this.state === "can_move") {
-            if (direction === "up" && this.y - 10 > 0) {
+            if (direction === "up") {
                 this.y -= 5;
                 //this.updatePropulsionFire();
-            } else if (direction === "down" && this.y + 10 < this.scene.scale.height) {
+            } else if (direction === "down") {
                 this.y += 5;
                 //this.updatePropulsionFire();
             }
 
-            if (direction === "left" && this.x - 10 > 0) {
+            if (direction === "left") {
                 this.x -= 5;
                 //this.updatePropulsionFire();
-            } else if (direction === "right" && this.x + 10 < this.scene.scale.width) {
+            } else if (direction === "right") {
                 this.x += 5;
                 //this.updatePropulsionFire();
             }
