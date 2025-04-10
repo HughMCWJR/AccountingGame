@@ -1,7 +1,6 @@
 import { GameObjects } from "phaser";
 
 export class Basket extends GameObjects.Container {
-    type;
 
     constructor(scene, x, y, type) {
         super(scene, x, y);
@@ -31,25 +30,12 @@ export class Basket extends GameObjects.Container {
 
         this.body.setSize(this.basketImage.displayWidth, this.basketImage.displayHeight);
         this.body.setOffset(-this.basketImage.displayWidth / 2, -this.basketImage.displayHeight / 2);
-
         this.body.setImmovable(true);
-    }
 
-    // Found overlap betwene ball and basket, check what to do
-    checkForBall(ball) {
-
-        if (ball.state != "picked" && ball.pit_number == null) {
-            if (ball.type === this.type.toLowerCase()) {
-                this.scene.points += 10;
-                this.scene.scene.get("HudScene")
-                    .update_points(this.scene.points);
-                ball.destroyBall(); // destroy the ball
-            } else {
-                ball.goToPit();
-            }
-        }
+        this.setSize(this.basketImage.displayWidth, this.basketImage.displayHeight);
 
     }
+
 
     start() {
         this.setActive(true);

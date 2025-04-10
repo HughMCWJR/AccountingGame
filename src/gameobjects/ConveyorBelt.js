@@ -19,6 +19,7 @@ export class ConveyorBelt extends Physics.Arcade.Sprite {
     set_pos_and_belt_label(x, y, belt_label) {
         this.x = x;
         this.y = y;
+        this.belt_label = belt_label;
 
         if (belt_label == 1 || belt_label == 2 || belt_label == 3 || belt_label == 4 || belt_label == 5) {
             this.belt_label = belt_label;
@@ -27,11 +28,11 @@ export class ConveyorBelt extends Physics.Arcade.Sprite {
         }
 
         // Set Direction
-        if (belt_label == 1 || belt_label == 3) {
+        if (belt_label == 2 || belt_label == 3) {
             // Down
             this.angle = 0;
             this.play("down");
-        } else if (belt_label == 2) {
+        } else if (belt_label == 1) {
             // Up
             this.angle = 180;
             this.play("up");

@@ -49,13 +49,13 @@ export class Player extends Physics.Arcade.Image {
 
     move(direction) {
         if (this.state === "can_move") {
-            if (direction === "up" && this.y - 10 > 0) {
+            if (direction === "up") {
                 this.y -= 5;
             } else if (direction === "down" && this.y + 10 < this.scene.scale.height) {
                 this.y += 5;
             }
 
-            if (direction === "left" && this.x - 10 > 0) {
+            if (direction === "left") {
                 this.x -= 5;
             } else if (direction === "right" && this.x + 10 < this.scene.scale.width) {
                 this.x += 5;
