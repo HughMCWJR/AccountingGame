@@ -17,8 +17,8 @@ const config = {
     pixelArt: true,
     roundPixel: false,
     max: {
-        width: 1366,
-        height: 768,
+        width: window.innerWidth,
+        height: window.innerHeight,
     },
     scale: {
         mode: Phaser.Scale.FIT,

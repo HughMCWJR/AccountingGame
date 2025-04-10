@@ -8,6 +8,8 @@
     "preview": "vite preview"
   },
   "devDependencies": {
+    "parcel": "^2.14.2",
+    "parcel-reporter-static-files-copy": "^1.5.3",
     "vite": "^6.2.2"
   },
   "dependencies": {
