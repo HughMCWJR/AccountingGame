@@ -96,7 +96,6 @@ export class MainScene extends Scene {
             this.config.basket_types.map((type, index) => [type, { correct: 0, incorrect: 0 }])
         );
         const NUM_BALLS = Math.ceil(this.config.time_limit / this.config.time_between_ball_spawns);
-
         // Reset points
         this.points = 0;
         this.game_over_timeout = this.config.time_limit / 1000;
