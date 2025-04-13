@@ -68,10 +68,7 @@ export class MainScene extends Scene {
     points;
     game_over_timeout;
 
-
     config = config
-
-
 
     constructor() {
         super("MainScene");
@@ -79,7 +76,6 @@ export class MainScene extends Scene {
 
     init(data) {
         this.ballCount = 0;
-        this.difficulty = parseInt(localStorage.getItem('difficulty') || 1);
         this.cameras.main.fadeIn(1000, 0, 0, 0);
         const game_type = data.type || "accounting"; // "debit_credit" or "accounting"
         if (game_type == "debit_credit") {
@@ -361,6 +357,7 @@ export class MainScene extends Scene {
         // This event comes from MenuScene
         this.game.events.on("start-game", () => {
             this.scene.stop("MenuScene");
+            this.difficulty = parseInt(localStorage.getItem('difficulty') || 1);
             this.time.addEvent({
                 delay: this.config.time_between_ball_spawns, // happens every 2 seconds
                 callback: this.addBall,
