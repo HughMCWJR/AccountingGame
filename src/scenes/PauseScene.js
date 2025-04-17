@@ -103,9 +103,10 @@ export class PauseScene extends Scene {
 
                 // show the countdown text
                 this.countdownText = this.add.text(this.scale.width / 2, this.scale.height / 2, "3", {
-                    fontSize: "48px",
-                    color: "#ffffff",
-                    align: "center"
+                    fontSize: "100px",
+                    color: "#000000",
+                    align: "center",
+                    strokeThickness: 10
                 }).setOrigin(0.5);
 
                 let countdown = 3;
