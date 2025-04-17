@@ -163,7 +163,7 @@ export class MainScene extends Scene {
     }
 
     getRandomAllElements(total) {
-        const typeNames = ["assets", "liabilities", "stakeholders_equity", "expenses", "revenues"];
+        const typeNames = ["assets", "liabilities", "stakeholders equity", "expenses", "revenues"];
         const colCount = this.allSheet[0]?.length ?? 0;
         const typeNums = this.generateRandomNumbers(total, colCount, false);
 
