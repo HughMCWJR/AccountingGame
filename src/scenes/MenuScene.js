@@ -1,5 +1,8 @@
 import { Scene } from "phaser";
 
+import { TooltipManager } from "../gameobjects/Tooltips";
+import {RIGHT_FIRST_TIME_SCORE, RIGHT_NOT_FIRST_TIME_SCORE} from "./MainScene";
+
 export class MenuScene extends Scene {
     constructor() {
         super("MenuScene");
@@ -7,6 +10,8 @@ export class MenuScene extends Scene {
 
     init() {
         this.cameras.main.fadeIn(1000, 0, 0, 0);
+
+        this.tooltip = new TooltipManager(this);
     }
 
     create() {
@@ -84,6 +89,7 @@ export class MenuScene extends Scene {
             });
             this.game.events.emit("start-game");
         });
+        this.tooltip.attachTo(startGameText, `Default mode, put vocab in correct bins. If a vocab is sorted correctly the first time, it is worth ${RIGHT_FIRST_TIME_SCORE} points; otherwise, ${RIGHT_NOT_FIRST_TIME_SCORE} points.`);
 
         // create the "Start Tutorial" button for the tutorial mode where answers are given
         const startTutorialText = this.add.text(this.scale.width * 3 / 4, this.scale.height / 2 + (FIRST_RECTANGLE_HEIGHT / 2) + (SECOND_RECTANGLE_HEIGHT / 2) + vertical_shift_to_center, "Start Tutorial", {
@@ -101,7 +107,7 @@ export class MenuScene extends Scene {
             });
             this.game.events.emit("start-game");
         });
-        
+        this.tooltip.attachTo(startTutorialText, "Play with answers revealed as a good study tool.");
 
         // // Send start-game event when user clicks
         // this.input.on("pointerdown", () => {

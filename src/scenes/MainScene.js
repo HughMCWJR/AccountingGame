@@ -49,6 +49,8 @@ const fetchData = async (num_ball, game_type, retries = 3, delay = 1000) => {
 };
 
 const NUM_BALLS_AT_TIME = 4;
+export const RIGHT_FIRST_TIME_SCORE = 10;
+export const RIGHT_NOT_FIRST_TIME_SCORE = 5;
 
 const config = {
     // The following two are in secs
@@ -142,7 +144,7 @@ export class MainScene extends Scene {
 
         if (ball.state != "picked" && ball.pit_number == null) {
             if (ball.type === basket.type.toLowerCase()) {
-                this.points += 10;
+                this.points += ball.been_in_wrong_basket ? RIGHT_NOT_FIRST_TIME_SCORE : RIGHT_FIRST_TIME_SCORE;
                 this.scene.get("HudScene").update_points(this.points);
                 ball.destroyBall(); // destroy the ball
                 this.answer_stats.get(basket.type).correct += 1; // update the correct count for the basket type`

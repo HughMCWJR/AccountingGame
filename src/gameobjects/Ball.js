@@ -79,6 +79,9 @@ export class Ball extends GameObjects.Container {
         // Number of pit that this ball is laying in (null if not laying in a pit)
         // (Starts at 0)
         this.pit_number = null;
+
+        // Whether this ball has been put in the wrong basket so far
+        this.been_in_wrong_basket = false;
     }
 
     formatTextToSquare(text) {
@@ -168,6 +171,8 @@ export class Ball extends GameObjects.Container {
 
     // Send to pit for player to retry with ball
     goToPit() {
+        this.been_in_wrong_basket = true;
+
         let pit_number = 0;
         while (this.scene.pit_fullnesses[pit_number] === true) {
             pit_number += 1;
