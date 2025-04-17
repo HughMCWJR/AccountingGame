@@ -5,7 +5,8 @@ import { ConveyorBelt } from "../gameobjects/ConveyorBelt";
 import { Ball } from "../gameobjects/Ball";
 import { Basket } from "../gameobjects/Basket";
 import { TooltipManager } from "../gameobjects/Tooltips";
-import axios from 'axios';
+import * as XLSX from 'xlsx';
+
 export const base_url = import.meta.env.VITE_API_URL;
 
 const DEBIT = "Debit";
@@ -24,29 +25,6 @@ const DESCRIPTION_MAP = new Map([
     [EXPENSES, "Expenses are outflows or other using up of assets of anentity or incurrences of its liabilities (or a combination of both) from delivering orproducing goods, rendering services, or carrying out other activities"],
     [REVENUES, "Inflows or other enhancements of assets of an entityor settlements of its liabilities (or a combination of both) from delivering orproducing goods, rendering services, or carrying out other activities"],
 ]);
-const fetchData = async (num_ball, game_type, retries = 3, delay = 1000) => {
-    let api_url = null;
-    if (game_type == "debit_credit") {
-        api_url = `${base_url}/get_random_nb_elements`;
-    } else if (game_type == "accounting") {
-        api_url = `${base_url}/get_random_all_elements`;
-    }
-    for (let attempt = 1; attempt <= retries; attempt++) {
-        try {
-            const response = await axios.post(api_url, { num: num_ball }, { withCredentials: true });
-            console.log(response.data);
-            return response.data; // success, return early
-        } catch (error) {
-            console.error(`Attempt ${attempt} failed:`, error.message);
-            if (attempt < retries) {
-                await new Promise((resolve) => setTimeout(resolve, delay)); // wait before retry
-            } else {
-                console.error("All attempts failed.");
-                throw error; // after all attempts have failed, throw the error
-            }
-        }
-    }
-};
 
 const NUM_BALLS_AT_TIME = 4;
 
@@ -77,30 +55,42 @@ export class MainScene extends Scene {
     init(data) {
         this.ballCount = 0;
         this.cameras.main.fadeIn(1000, 0, 0, 0);
+
+
+        if (!this.normalBalance || !this.allSheet) {
+            // Load the Excel file from the cache
+            const binary = this.cache.binary.get('excelData');
+            const workbook = XLSX.read(binary, { type: 'array' });
+
+            // Parse the sheets into JSON format
+            this.normalBalance = XLSX.utils.sheet_to_json(workbook.Sheets["Normal Balance"] ?? {}, { header: 1 });
+            this.allSheet = XLSX.utils.sheet_to_json(workbook.Sheets["All"] ?? {}, { header: 1 });
+        }
+
+        const NUM_BALLS = Math.ceil(this.config.time_limit / this.config.time_between_ball_spawns);
         const game_type = data.type || "accounting"; // "debit_credit" or "accounting"
         if (game_type == "debit_credit") {
+            this.elements = this.getRandomNBElements(NUM_BALLS);
             this.config.basket_types = [DEBIT, CREDIT];
             this.config.belt_types = [NONE, NONE, NONE, DEBIT, CREDIT];
             this.config.belt_labels = [4, 5];
         }
         else if (game_type == "accounting") {
+            this.elements = this.getRandomAllElements(NUM_BALLS);
             this.config.basket_types = [ASSETS, LIABITILITIES, STAKEHOLDERS_EQUITY, REVENUES, EXPENSES];
             this.config.belt_types = [ASSETS, LIABITILITIES, STAKEHOLDERS_EQUITY, REVENUES, EXPENSES];
             this.config.belt_labels = [1, 2, 3, 4, 5];
         }
+
         this.answer_stats = new Map(
             this.config.basket_types.map((type, index) => [type, { correct: 0, incorrect: 0 }])
         );
-        const NUM_BALLS = Math.ceil(this.config.time_limit / this.config.time_between_ball_spawns);
+
         // Reset points
         this.points = 0;
         this.game_over_timeout = this.config.time_limit / 1000;
-        fetchData(NUM_BALLS, game_type).then((data) => {
-            this.elements = data;
-            this.scene.launch("MenuScene");
-        }).catch((error) => {
-            console.error("Failed to fetch data:", error);
-        });
+
+        this.scene.launch("MenuScene");
 
         this.keySpace = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
         this.keyEsc = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ESC);
@@ -159,6 +149,52 @@ export class MainScene extends Scene {
 
     }
 
+    getRandomNBElements(total) {
+        const credits = this.normalBalance.map(row => row?.[1]).filter(Boolean);
+        const debits = this.normalBalance.map(row => row?.[0]).filter(Boolean);
+        const [creditNum, debitNum] = this.generateRandomNumbers(total, 2, false);
+
+        const creditSamples = this.sample(credits, creditNum).map(name => ({ name, type: "credit" }));
+        const debitSamples = this.sample(debits, debitNum).map(name => ({ name, type: "debit" }));
+
+        return this.shuffle([...creditSamples, ...debitSamples]);
+    }
+
+    getRandomAllElements(total) {
+        const typeNames = ["assets", "liabilities", "stakeholders_equity", "expenses", "revenues"];
+        const colCount = this.allSheet[0]?.length ?? 0;
+        const typeNums = this.generateRandomNumbers(total, colCount, false);
+
+        return this.shuffle(
+            Array.from({ length: colCount }).flatMap((_, i) => {
+                const col = this.allSheet.map(row => row?.[i]).filter(Boolean);
+                return this.sample(col, typeNums[i]).map(name => ({
+                    name,
+                    type: typeNames[i] ?? `type${i}`,
+                }));
+            })
+        );
+    }
+
+    // 实用工具函数们
+    sample(arr, count) {
+        return arr.slice().sort(() => Math.random() - 0.5).slice(0, count);
+    }
+
+    shuffle(arr) {
+        return arr.slice().sort(() => Math.random() - 0.5);
+    }
+
+    generateRandomNumbers(sum, count, equal = true) {
+        if (equal) {
+            return Array(count).fill(Math.ceil(sum / count));
+        }
+        const points = Array.from({ length: count - 1 }, () => Math.floor(Math.random() * (sum - count + 1))).sort((a, b) => a - b);
+        points.unshift(0); points.push(sum);
+        return Array.from({ length: count }, (_, i) => points[i + 1] - points[i]);
+    }
+
+
 
     create() {
         if (this.sound.locked) {
@@ -171,6 +207,8 @@ export class MainScene extends Scene {
         }
         this.add.image(0, 0, "background")
             .setOrigin(0, 0);
+
+
 
         // TO DO
         // Load from player choice
