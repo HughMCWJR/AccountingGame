@@ -16,9 +16,6 @@ export class Player extends Physics.Arcade.Image {
         this.scene.add.existing(this);
         this.scene.physics.add.existing(this);
 
-        // this.propulsion_fire = this.scene.add.sprite(this.x - 32, this.y, "propulsion-fire");
-        // this.propulsion_fire.play("fire");
-
         // Bullets group to create pool
         this.bullets = this.scene.physics.add.group({
             classType: Bullet,
@@ -32,7 +29,6 @@ export class Player extends Physics.Arcade.Image {
 
     start() {
         this.state = "start";
-        // const propulsion_fires_trail = [];
 
         // Effect to move the player from left to right
         this.scene.tweens.add({
@@ -43,28 +39,8 @@ export class Player extends Physics.Arcade.Image {
             ease: "Power2",
             yoyo: false,
             onUpdate: () => {
-                // Just a little trail FX
-                // const propulsion = this.scene.add.sprite(this.x - 32, this.y, "propulsion-fire");
-                // propulsion.play("fire");
-                // propulsion_fires_trail.push(propulsion);
             },
             onComplete: () => {
-                // Destroy all the trail FX
-                // propulsion_fires_trail.forEach((propulsion, i) => {
-                //     this.scene.tweens.add({
-                //         targets: propulsion,
-                //         alpha: 0,
-                //         scale: 0.5,
-                //         duration: 200 + (i * 2),
-                //         ease: "Power2",
-                //         onComplete: () => {
-                //             propulsion.destroy();
-                //         }
-                //     });
-                // });
-
-                // this.propulsion_fire.setPosition(this.x - 32, this.y);
-
                 // When all tween are finished, the player can move
                 this.state = "can_move";
             }
@@ -75,35 +51,17 @@ export class Player extends Physics.Arcade.Image {
         if (this.state === "can_move") {
             if (direction === "up") {
                 this.y -= 5;
-                //this.updatePropulsionFire();
-            } else if (direction === "down") {
+            } else if (direction === "down" && this.y + 10 < this.scene.scale.height) {
                 this.y += 5;
-                //this.updatePropulsionFire();
             }
 
             if (direction === "left") {
                 this.x -= 5;
-                //this.updatePropulsionFire();
-            } else if (direction === "right") {
+            } else if (direction === "right" && this.x + 10 < this.scene.scale.width) {
                 this.x += 5;
-                //this.updatePropulsionFire();
             }
         }
     }
-
-    fire(x, y) {
-        if (this.state === "can_move") {
-            // Create bullet
-            const bullet = this.bullets.get();
-            if (bullet) {
-                bullet.fire(this.x + 16, this.y + 5, x, y);
-            }
-        }
-    }
-
-    // updatePropulsionFire() {
-    //     this.propulsion_fire.setPosition(this.x - 32, this.y);
-    // }
 
     pick(ball) {
         if (this.ball && this.ball.state === "picked") {

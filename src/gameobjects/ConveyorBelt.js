@@ -1,5 +1,4 @@
 import { Physics, Math } from "phaser";
-import { Bullet } from "./Bullet";
 
 export class ConveyorBelt extends Physics.Arcade.Sprite {
     scene = null;
@@ -39,12 +38,12 @@ export class ConveyorBelt extends Physics.Arcade.Sprite {
             this.play("up");
         } else if (belt_label == 4) {
             // Right
-            this.body.setSize(43, 48);
+           // this.body.setSize(43, 48);
             this.angle = 90;
             this.play("right");
         } else if (belt_label == 5) {
             // Left
-            this.setSize(43, 48);
+            //this.setSize(43, 48);
             this.angle = -90;
             this.play("left");
         }
