@@ -23,16 +23,17 @@ export class SettingsScene extends Scene {
 
     create() {
         const { width, height } = this.scale;
-
+        this.volume = parseFloat(localStorage.getItem('volume'));
+        if (isNaN(this.volume)) {
+            this.volume = DEFAULT_SETTINGS.volume;
+        }
+        /*
         // Load stored or default settings
         this.difficultyIndex = parseInt(localStorage.getItem('difficulty'));
         if (isNaN(this.difficultyIndex)) {
             this.difficultyIndex = DEFAULT_SETTINGS.difficulty;
         }
-        this.volume = parseFloat(localStorage.getItem('volume'));
-        if (isNaN(this.volume)) {
-            this.volume = DEFAULT_SETTINGS.volume;
-        }
+        
 
         // Title - centered
         this.add.text(width / 2, 30, "SETTINGS", {
@@ -78,9 +79,10 @@ export class SettingsScene extends Scene {
 
         // Initially set the correct description
         this.updateDifficultyDescription();
+        */
 
         // Volume label
-        this.add.text(40, 260, "Sound Volume", {
+        this.add.text(40, 60, "Sound Volume", {
             fontFamily: 'Arial',
             fontSize: '28px',
             color: '#ffffff',
@@ -90,10 +92,10 @@ export class SettingsScene extends Scene {
         }).setOrigin(0, 0);
 
         // Create Volume Slider at (40, 310)
-        this.volumeSlider = this.createVolumeSlider(40, 310);
+        this.volumeSlider = this.createVolumeSlider(40, 110);
 
         // Volume display below slider
-        this.volumeDisplay = this.add.text(40, 350, `Volume: ${(this.volume * 100).toFixed(0)}%`, {
+        this.volumeDisplay = this.add.text(40, 150, `Volume: ${(this.volume * 100).toFixed(0)}%`, {
             fontFamily: 'Arial',
             fontSize: '20px',
             color: '#ffeb99',
