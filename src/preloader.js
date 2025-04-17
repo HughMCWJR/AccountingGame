@@ -88,6 +88,8 @@ export class Preloader extends Phaser.Scene {
         this.load.audio("selection", "music/selection_sound.wav");
         this.load.audio("correct", "music/correct_sound.wav");
         this.load.audio("error", "music/error_sound.mp3");
+        this.load.binary('excelData', 'Accounting Elements for Game.xlsx');
+
 
         // Event to update the loading bar
         this.load.on("progress", (progress) => {
