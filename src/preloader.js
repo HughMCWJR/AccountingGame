@@ -50,10 +50,7 @@ export class Preloader extends Phaser.Scene {
         this.load.image("arrow_keys", "arrow_keys.jpg");
         this.load.image("WASD", "WASD.jpg");
         this.load.image("background", "background.png");
-
         this.load.image("player", "player/aubie.png");
-        // this.load.atlas("propulsion-fire", "player/propulsion/propulsion-fire.png", "player/propulsion/propulsion-fire_atlas.json");
-        // this.load.animation("propulsion-fire-anim", "player/propulsion/propulsion-fire_anim.json");
 
         // Conveyor Belts
         this.load.image("belt", "objects/conveyor-belt/Conveyor_Belt_Base.png")
@@ -67,8 +64,8 @@ export class Preloader extends Phaser.Scene {
         this.load.animation("left-belt-anim", "objects/conveyor-belt/left-belt/left-belt_anim.json");
 
         // Bullets
-        this.load.image("bullet", "player/bullet.png");
-        this.load.image("flares")
+        //this.load.image("bullet", "player/bullet.png");
+        //this.load.image("flares")
 
         // Balls
         this.load.image("ball", "ball.png");

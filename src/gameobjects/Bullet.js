@@ -10,15 +10,12 @@ export class Bullet extends GameObjects.Image
         super(scene, x, y, "bullet");
         this.speed = Phaser.Math.GetSpeed(450, 1);
         this.postFX.addBloom(0xffffff, 1, 1, 2, 1.2);
-        // Default bullet (player bullet)
-        this.name = "bullet";
     }
 
     fire (x, y, targetX = 1, targetY = 0, bullet_texture = "bullet")
     {
         // Change bullet change texture
         this.setTexture(bullet_texture);
-
         this.setPosition(x, y);
         this.setActive(true);
         this.setVisible(true);
@@ -27,7 +24,7 @@ export class Bullet extends GameObjects.Image
         if (targetX === 1 && targetY === 0) {
             this.end_direction.setTo(1, 0);
         } else {
-            this.end_direction.setTo(targetX - x, targetY - y).normalize();            
+            this.end_direction.setTo(targetX - x, targetY - y).normalize();
         }
     }
 
@@ -56,7 +53,6 @@ export class Bullet extends GameObjects.Image
         this.setActive(false);
         this.setVisible(false);
         this.destroy();
-
     }
 
     // Update bullet position and destroy if it goes off screen

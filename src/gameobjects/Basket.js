@@ -9,8 +9,8 @@ export class Basket extends GameObjects.Container {
         // create bakset image
         this.basketImage = new GameObjects.Image(scene, 0, 0, "basket");
         this.basketImage.setOrigin(0.5, 0.5);
-        this.basketImage.displayWidth = 100;
-        this.basketImage.displayHeight = 100;
+        this.basketImage.displayWidth = 90;
+        this.basketImage.displayHeight = 90;
 
         // create text label
         this.textLabel = new GameObjects.Text(scene, 0, 0, type, {
